@@ -1,0 +1,690 @@
+---
+title: "Modeling SSC Reductions from maxABC Using Risk Table Scores"
+author: ""
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    lightbox: true
+    code-fold: true
+    code-summary: "Show code"
+    code-tools: true
+    self-contained: true
+    theme: flatly
+execute:
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: setup
+#| echo: false
+library(tidyverse)
+library(betareg)
+library(brms)
+library(knitr)
+library(patchwork)
+
+theme_set(theme_minimal(base_size = 13))
+options(mc.cores = min(2, parallel::detectCores()))
+```
+
+## Summary
+
+This report looks at whether groundfish risk table scores help explain when
+the Scientific and Statistical Committee (SSC) recommends setting ABC below
+the maximum permissible ABC. In simple terms, it asks whether higher or more
+widespread concerns in the risk table tend to line up with larger reductions.
+
+The answer is yes, but only partly. Stocks with more elevated concerns often
+do receive larger reductions, and population dynamics concerns appear to be
+especially informative. At the same time, the relationship is not tight enough
+to treat the risk table as a formula. Similar score patterns can still lead to
+different reductions because the SSC also considers stock-specific context,
+model behavior, and management judgment.
+
+The results should therefore be read as descriptive rather than prescriptive.
+They summarize how risk table scores and SSC reductions have lined up in the
+historical record, but they do not provide a mechanical rule for future
+decisions.
+
+## Introduction
+
+The North Pacific Fishery Management Council's Scientific and Statistical
+Committee (SSC) may set ABCs below the maximum permissible ABC (maxABC)
+when the assessment risk table identifies elevated concerns. The risk table
+scores four categories—Assessment-related (A), Population dynamics (P),
+Ecosystem (E), and Fishery-informed (F)—on a scale where scores >1 indicate
+concern.
+
+This analysis sits within the broader context of the *Groundfish Risk Table
+Report: 2024 Update*, which collated risk table information for Alaska
+groundfish stocks in the Bering Sea and Aleutian Islands (BSAI) and the Gulf
+of Alaska (GOA) from 2018 onward. Risk table implementation changed
+substantially over that period. The 2018 trial year included only a small
+number of completed tables and only three categories. Fishery performance was
+added in 2019, and in response to SSC direction the scoring system was reduced
+from four levels to three beginning in 2023. Category descriptions were then
+revised again for 2024 to better align with the intent of the original table.
+Those shifts make direct comparisons across years imperfect, especially when
+contrasting the 2018 trial year and the reduced-level years from 2023 onward
+with the 2019-2022 period.
+
+An AFSC working group convened in early 2024 to review all groundfish risk
+table scores to date and consolidate them into a single living reference.
+That effort documented annual category scores, the maximum score across
+categories, author-proposed reductions, SSC-recommended reductions, the
+methods used to derive those reductions, and cases where the author, Plan
+Team, and SSC differed. The working group used that summary both to support
+stock assessment authors and to identify common patterns in how risk tables
+have been translated into ABC reductions over time.
+
+Across 2018-2024, a total of 136 risk tables were developed. Of those, 77 had
+at least one elevated score, 59 had no elevated scores, 25 included an author
+recommendation to reduce from maximum ABC, and 28 resulted in a final
+reduction following Plan Team and SSC review. Even with that history, the
+overall number of reductions remains small relative to the number of risk
+tables produced, which reinforces that risk table scores are informative but
+not determinative on their own.
+
+This document narrows that broader report into a modeling exercise. It focuses
+on the relationship between risk table scores and the magnitude of the SSC's
+recommended reduction from maxABC, and evaluates several candidate models for
+describing those reductions.
+
+## Background
+
+### How the risk table framework evolved
+
+Several design changes matter for interpretation of any time series built from
+these scores:
+
+1. In 2018, risk tables were used on a limited trial basis and included only
+   assessment, population dynamics, and ecosystem categories.
+2. In 2019, fishery performance was added as a fourth category.
+3. In 2023, the four scoring levels were reduced to three: normal, increased,
+   and extreme. Under that reduced system, current levels 2 and 3 are roughly
+   comparable to the earlier levels 3 and 4.
+4. In 2024, the text defining the categories was updated after the SSC asked
+   for descriptions that better covered the full intended range of conditions.
+
+These changes mean the raw scores are not fully stationary through time. Any
+model fit to the combined record should therefore be treated as descriptive of
+historical SSC behavior rather than as a stable calibration of a fixed scoring
+system.
+
+### How reductions have been derived in practice
+
+The 2024 summary report documented several approaches authors and reviewers
+have used when moving from elevated scores to a reduction from maxABC. Those
+approaches include:
+
+1. Deferring to the SSC to specify a reduction if one was judged warranted.
+2. Applying tier-based advice developed for one stock status category to
+   another, such as Tier 3-style advice used for Tier 1 stocks.
+3. Using prior projection results when a previous scenario better captured the
+   concern driving the reduction.
+4. Applying probability-based methods such as the Thompson framework for
+   translating elevated risk into a buffer below maxABC.
+5. Selecting an ABC level intended to keep the stock above a biological
+   threshold such as B20%.
+6. Using an alternative model configuration with better retrospective
+   performance or lower OFL and ABC values.
+7. Taking a stair-step approach between the current-year estimate and a
+   previous projection.
+8. Adjusting recent recruitment assumptions or the reference period used in
+   projections.
+
+That diversity in methods is important for interpreting the results below. The
+same nominal risk score can map to different reductions depending on stock
+status, model structure, and the rationale judged most relevant by the SSC.
+
+## Data
+
+The data below come from SSC-recommended reductions only (not Plan Team or
+author recommendations). Rollover years and records without a quantified
+reduction are excluded. Blank years in the broader report generally correspond
+to off-cycle assessments with no new risk table, although a reduction may
+still carry over from an earlier decision. The analysis dataset below is
+therefore a filtered subset of the full living summary rather than a complete
+reproduction of every annual stock entry.
+
+@tbl-data is the core analytical dataset used throughout the document.
+It provides the stock-year observations, the category-level elevated scores
+used as predictors, and the SSC reduction used as the response variable. The
+derived columns summarize two distinct ideas that recur in the figures and
+models below: overall severity through the total score, and breadth of concern
+through the number of elevated categories.
+
+```{r}
+#| label: tbl-data
+#| tbl-cap: "Risk table scores and SSC-recommended percent reductions from maxABC. Scores of 0 indicate the category was not elevated (score ≤ 1)."
+
+dat <- tribble(
+  ~stock,                            ~year, ~A, ~P, ~E, ~F, ~pct_red,
+  "EBS Pollock",                      2018,  0,  2,  2,  0,  30,
+  "EBS Pollock",                      2019,  0,  2,  2,  2,  43,
+  "EBS Pollock",                      2020,  0,  0,  2,  2,  30,
+  "EBS Pollock",                      2021,  2,  0,  2,  2,  11,
+  "EBS Pollock",                      2022,  2,  0,  0,  0,  43,
+  "EBS Pollock",                      2023,  0,  0,  2,  0,  18,
+  "EBS Pacific cod",                  2019,  0,  0,  2,  0,   3,
+  "AI Pacific cod",                   2023,  0,  2,  2,  0,  10,
+  "AK Sablefish",                     2018,  2,  4,  2,  0,  45,
+  "AK Sablefish",                     2019,  2,  3,  2,  3,  50,
+  "AK Sablefish",                     2020,  3,  3,  2,  3,  44,
+  "BSAI Yellowfin sole",              2021,  0,  2,  2,  0,  24,
+  "BSAI Greenland turbot",            2024,  3,  2,  2,  0,  25,
+  "BSAI Northern rock sole",          2022,  3,  0,  0,  0,  23,
+  "BSAI Blackspotted/Rougheye RF",   2022,  3,  2,  0,  2,  11,
+  "BSAI Sharks",                      2022,  3,  2,  0,  0,  13,
+  "GOA Pollock",                      2023,  2,  0,  0,  0,  18,
+  "GOA Dusky Rockfish",               2020,  2,  0,  0,  0,  24,
+  "GOA Rougheye/Blackspotted RF",     2023,  2,  2,  0,  0,  20,
+  "GOA Demersal shelf rockfish",      2021,  2,  2,  0,  2,  22,
+  "GOA Demersal shelf rockfish",      2022,  2,  2,  0,  2,  15
+)
+
+dat <- dat |>
+  mutate(
+    total_score  = A + P + E + F,
+    n_elevated   = (A > 0) + (P > 0) + (E > 0) + (F > 0),
+    pct_red_prop = pct_red / 100
+  )
+
+dat |>
+  select(stock, year, A, P, E, F, total_score, n_elevated, pct_red) |>
+  kable(col.names = c("Stock", "Year", "A", "P", "E", "F",
+                       "Total", "# Elevated", "% Reduction"))
+```
+
+## Exploratory Figures
+
+The exploratory displays in @fig-scatter-total, @fig-scatter-nelev,
+@fig-facet-categories, and @fig-cor are intended to answer a simple question
+before formal modeling begins: do the risk table scores contain visible signal
+about the size of the final SSC reduction, and if so, what kind of signal is
+it? Together these figures separate severity, breadth, category-specific
+effects, and correlation structure.
+
+### Reduction vs. total risk score
+
+@fig-scatter-total motivates the most basic candidate model by asking
+whether larger summed scores are generally associated with larger reductions.
+If the total score were carrying most of the information in the risk table, a
+clear monotonic relationship would be expected here.
+
+```{r}
+#| label: fig-scatter-total
+#| fig-cap: "Percent reduction from maxABC vs. total risk score (sum of elevated category scores). Points are colored by stock. The dashed line is a simple linear fit."
+#| fig-width: 8
+#| fig-height: 5.5
+
+ggplot(dat, aes(x = total_score, y = pct_red)) +
+geom_smooth(method = "lm", formula = y ~ x,
+              se = TRUE, color = "grey40", linetype = "dashed") +
+  geom_point(aes(color = stock), size = 3, alpha = 0.85) +
+  scale_color_brewer(palette = "Paired", name = "Stock") +
+  labs(x = "Total risk score (sum of A + P + E + F)",
+       y = "% reduction from maxABC") +
+  theme(legend.position = "right",
+        legend.text = element_text(size = 9))
+```
+
+The broad spread around the fitted line in @fig-scatter-total immediately
+suggests that the total score alone will be an incomplete summary of the SSC
+decision process, even if it captures some central tendency.
+
+### Reduction vs. number of elevated categories
+
+@fig-scatter-nelev shifts attention from severity to breadth. The goal
+is to see whether reductions tend to increase as more categories are flagged,
+even when the exact numerical scores differ across stocks and years.
+
+```{r}
+#| label: fig-scatter-nelev
+#| fig-cap: "Percent reduction from maxABC vs. number of risk table categories scored above 1."
+#| fig-width: 7
+#| fig-height: 5
+
+ggplot(dat, aes(x = factor(n_elevated), y = pct_red)) +
+  geom_boxplot(width = 0.4, outlier.shape = NA, fill = "grey90") +
+  geom_jitter(aes(color = stock), width = 0.12, size = 2.5, alpha = 0.85) +
+  scale_color_brewer(palette = "Paired", name = "Stock") +
+  labs(x = "Number of categories elevated (score > 1)",
+       y = "% reduction from maxABC") +
+  theme(legend.position = "right",
+        legend.text = element_text(size = 9))
+```
+
+This view is useful because a stock with several modest concerns may be treated
+differently from a stock with one isolated but severe concern, and
+@fig-scatter-nelev makes that contrast easier to see than a summed score alone.
+
+### Reduction by individual category score
+
+@fig-facet-categories provides the main category-by-category context for
+the later coefficient models. Rather than collapsing the table to a single
+summary metric, it shows how the observed reductions vary with score level
+within each of the four risk dimensions.
+
+```{r}
+#| label: fig-facet-categories
+#| fig-cap: "Percent reduction from maxABC broken out by score level within each risk table category. Points are jittered horizontally."
+#| fig-width: 9
+#| fig-height: 5
+
+dat |>
+  pivot_longer(cols = c(A, P, E, F), names_to = "category", values_to = "score") |>
+  mutate(category = recode(category,
+    A = "Assessment (A)", P = "Population (P)",
+    E = "Ecosystem (E)",  F = "Fishery (F)")) |>
+  ggplot(aes(x = factor(score), y = pct_red)) +
+  geom_boxplot(width = 0.4, outlier.shape = NA, fill = "grey90") +
+  geom_jitter(width = 0.1, size = 2, alpha = 0.7, color = "steelblue") +
+  facet_wrap(~ category) +
+  labs(x = "Risk score", y = "% reduction from maxABC")
+```
+
+This comparison helps assess whether some dimensions appear to matter more than
+others. In particular, it previews whether population, ecosystem, or
+assessment-related concerns tend to align more consistently with larger
+reductions.
+
+### Correlation matrix of predictors
+
+@fig-cor is included as diagnostic context for model specification. The
+purpose is not substantive on its own, but to show where predictors move
+together and where they contain distinct information.
+
+```{r}
+#| label: fig-cor
+#| fig-cap: "Pairwise correlation among risk score predictors and the percent reduction."
+#| fig-width: 6
+#| fig-height: 5
+
+cor_mat <- dat |>
+  select(A, P, E, F, total_score, pct_red) |>
+  cor()
+
+cor_long <- as.data.frame(as.table(cor_mat)) |>
+  rename(var1 = Var1, var2 = Var2, r = Freq)
+
+ggplot(cor_long, aes(var1, var2, fill = r)) +
+  geom_tile(color = "white") +
+  geom_text(aes(label = sprintf("%.2f", r)), size = 3.5) +
+  scale_fill_gradient2(low = "steelblue", mid = "white", high = "firebrick",
+                       midpoint = 0, limits = c(-1, 1), name = "r") +
+  labs(x = NULL, y = NULL) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+The correlation structure in @fig-cor informs whether a more aggregated model
+is reasonable and helps interpret coefficient instability in models that
+include all category scores simultaneously.
+
+## Models
+
+The frequentist models below provide progressively richer summaries of the
+relationship between risk table scores and SSC reductions. A Bayesian
+mixed-effects model is then added to account explicitly for repeated
+observations from the same stock through partial pooling.
+
+We consider four candidate models, ranging from simple to structured.
+
+### Model 1: OLS on total score
+
+A baseline linear model treating the sum of scores as the sole predictor.
+
+```{r}
+#| label: m1-fit
+
+m1 <- lm(pct_red ~ total_score, data = dat)
+summary(m1)
+```
+
+### Model 2: OLS with individual category scores
+
+Allows each risk dimension to carry different weight.
+
+```{r}
+#| label: m2-fit
+
+m2 <- lm(pct_red ~ A + P + E + F, data = dat)
+summary(m2)
+```
+
+### Model 3: Beta regression on individual scores
+
+Beta regression is the natural choice for a bounded proportional response.
+We model the logit of the proportional reduction.
+
+```{r}
+#| label: m3-fit
+
+m3 <- betareg(pct_red_prop ~ A + P + E + F, data = dat)
+summary(m3)
+```
+
+### Model 4: Beta regression with total score + number elevated
+
+A parsimonious alternative that separates severity (total score) from
+breadth (how many categories are flagged).
+
+```{r}
+#| label: m4-fit
+
+m4 <- betareg(pct_red_prop ~ total_score + n_elevated, data = dat)
+summary(m4)
+```
+
+### Model 5: Bayesian beta mixed-effects model
+
+The previous models treat stock-year observations as conditionally independent.
+That is a strong assumption because repeated entries for the same stock may
+share unmeasured characteristics that affect the SSC's choice of reduction.
+To address that structure, the final model uses a beta likelihood with the same
+four category scores as fixed effects and a stock-level random intercept.
+
+For observation $i$ from stock $s[i]$, let $y_i$ denote the proportional
+reduction from maxABC. The Bayesian model is:
+
+$$
+y_i \sim \text{Beta}(\mu_i \phi,\ (1 - \mu_i)\phi)
+$$ {#eq-brms-response}
+
+$$
+\text{logit}(\mu_i) = \alpha + \beta_A A_i + \beta_P P_i + \beta_E E_i + \beta_F F_i + u_{s[i]}
+$$ {#eq-brms-mean}
+
+$$
+u_s \sim \mathcal{N}(0, \sigma_{\text{stock}}), \qquad
+\sigma_{\text{stock}} > 0
+$$ {#eq-brms-ranef}
+
+This formulation keeps the bounded-response structure of Model 3 while letting
+each stock deviate from the overall intercept in a partially pooled way.
+Weakly informative priors are used to stabilize estimation given the small
+sample size.
+
+```{r}
+#| label: m5-fit
+#| results: false
+
+intercept_prior_mean <- qlogis(mean(dat$pct_red_prop))
+
+priors_m5 <- c(
+  prior_string(
+    sprintf("normal(%0.6f, 1.5)", intercept_prior_mean),
+    class = "Intercept"
+  ),
+  prior(normal(0, 1.5), class = "b"),
+  prior(exponential(1), class = "sd"),
+  prior(exponential(1), class = "phi")
+)
+
+m5 <- brm(
+  formula = bf(pct_red_prop ~ A + P + E + F + (1 | stock)),
+  data = dat,
+  family = Beta(link = "logit"),
+  prior = priors_m5,
+  chains = 2,
+  iter = 2000,
+  warmup = 1000,
+  cores = min(2, parallel::detectCores()),
+  seed = 1234,
+  backend = "rstan",
+  control = list(adapt_delta = 0.95),
+  file = "m5_brms_fit",
+  file_refit = "on_change",
+  refresh = 0
+)
+```
+
+@tbl-brms-fixed summarizes the posterior for the main coefficients and the
+stock-level variance term. These estimates are easiest to interpret directionally:
+positive values indicate larger expected reductions on the logit scale, after
+accounting for the other scores and stock-to-stock heterogeneity.
+
+```{r}
+#| label: tbl-brms-fixed
+#| tbl-cap: "Posterior summaries for the Bayesian beta mixed-effects model."
+
+m5_post <- posterior_summary(
+  m5,
+  variable = c(
+    "Intercept",
+    "b_A", "b_P", "b_E", "b_F",
+    "sd_stock__Intercept",
+    "phi"
+  ),
+  probs = c(0.025, 0.975)
+) |>
+  as.data.frame() |>
+  rownames_to_column("parameter") |>
+  mutate(
+    parameter = recode(
+      parameter,
+      `Intercept` = "Intercept",
+      `b_A` = "Assessment (A)",
+      `b_P` = "Population (P)",
+      `b_E` = "Ecosystem (E)",
+      `b_F` = "Fishery (F)",
+      `sd_stock__Intercept` = "Stock SD",
+      `phi` = "Precision (phi)"
+    )
+  ) |>
+  rename(
+    Estimate = Estimate,
+    `Est. Error` = Est.Error,
+    `2.5%` = Q2.5,
+    `97.5%` = Q97.5
+  ) |>
+  mutate(across(where(is.numeric), ~ round(.x, 2)))
+
+kable(m5_post)
+```
+
+Because the Bayesian model includes stock-level partial pooling, it is not
+strictly comparable to the AIC table below on the same scale. Instead, it is
+best read as a complementary model that asks whether the main category effects
+remain after allowing each stock to have its own baseline tendency toward
+higher or lower reductions.
+
+### Model comparison
+
+@tbl-compare brings the four candidate models onto a common footing. The
+motivation is pragmatic: rather than argue for a model based only on
+interpretability, it compares fit statistics to show whether added structure is
+buying meaningful explanatory value.
+
+```{r}
+#| label: tbl-compare
+#| tbl-cap: "Model comparison. AIC and pseudo/adjusted R² where available."
+
+compare <- tribble(
+  ~model, ~description, ~AIC, ~R2,
+  "M1", "OLS ~ total score",
+    AIC(m1), summary(m1)$adj.r.squared,
+  "M2", "OLS ~ A + P + E + F",
+    AIC(m2), summary(m2)$adj.r.squared,
+  "M3", "Beta ~ A + P + E + F",
+    AIC(m3), m3$pseudo.r.squared,
+  "M4", "Beta ~ total + n_elevated",
+    AIC(m4), m4$pseudo.r.squared
+)
+
+compare |>
+  mutate(across(c(AIC, R2), ~ round(.x, 2))) |>
+  kable(col.names = c("Model", "Description", "AIC", "R² / pseudo-R²"))
+```
+
+Read @tbl-compare as a compact summary of the tradeoff between parsimony and
+flexibility. It indicates whether it is more useful to model the four
+categories separately or to collapse them into broader summaries like total
+score and number elevated.
+
+### Observed vs. fitted
+
+@fig-obs-fit provides the most direct visual model check in the report.
+Its purpose is to show how closely each candidate model reproduces the observed
+reductions across the full sample, and whether any model systematically
+underpredicts or overpredicts certain cases.
+
+```{r}
+#| label: fig-obs-fit
+#| fig-cap: "Observed vs. fitted reductions for the five candidate models. The 1:1 line is shown for reference."
+#| fig-width: 9
+#| fig-height: 7
+
+fits <- dat |>
+  mutate(
+    M1 = fitted(m1),
+    M2 = fitted(m2),
+    M3 = fitted(m3) * 100,
+    M4 = fitted(m4) * 100,
+    M5 = fitted(m5, summary = TRUE)[, "Estimate"] * 100
+  ) |>
+  pivot_longer(M1:M5, names_to = "model", values_to = "fitted") |>
+  mutate(model = recode(model,
+    M1 = "M1: OLS ~ total",
+    M2 = "M2: OLS ~ A+P+E+F",
+    M3 = "M3: Beta ~ A+P+E+F",
+    M4 = "M4: Beta ~ total+n_elev",
+    M5 = "M5: Bayesian beta + stock RE"))
+
+ggplot(fits, aes(x = fitted, y = pct_red)) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "grey50") +
+  geom_point(aes(color = stock), size = 2, alpha = 0.8) +
+  facet_wrap(~ model, scales = "free_x") +
+  scale_color_brewer(palette = "Paired", name = "Stock") +
+  labs(x = "Fitted % reduction", y = "Observed % reduction") +
+  theme(legend.position = "bottom",
+        legend.text = element_text(size = 8))
+```
+
+Because the 1:1 line is drawn explicitly in @fig-obs-fit, departures from that
+line make it easier to identify which observations are structurally hard to
+explain regardless of model choice.
+
+### Coefficient effects (beta regression)
+
+@fig-coefs translates the preferred category-based beta regression into
+an interpretable effect display. The main motivation is to show direction,
+magnitude, and uncertainty for each category after accounting for the others in
+the same model.
+
+```{r}
+#| label: fig-coefs
+#| fig-cap: "Estimated marginal effect of each risk score category on percent reduction (Model 3, beta regression). Points show the coefficient estimate on the logit scale; bars are 95% confidence intervals."
+#| fig-width: 6
+#| fig-height: 4
+
+coef_tbl <- broom::tidy(m3, conf.int = TRUE) |>
+  filter(component == "mean", term != "(Intercept)") |>
+  mutate(term = recode(term,
+    A = "Assessment (A)", P = "Population (P)",
+    E = "Ecosystem (E)",  F = "Fishery (F)"))
+
+ggplot(coef_tbl, aes(x = estimate, y = reorder(term, estimate))) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "grey60") +
+  geom_pointrange(aes(xmin = conf.low, xmax = conf.high),
+                  size = 0.8, color = "steelblue") +
+  labs(x = "Coefficient (logit scale)", y = NULL)
+```
+
+In that sense, @fig-coefs is the clearest summary of which risk dimensions are
+most strongly associated with larger reductions once the overlapping signal
+among categories is taken into account.
+
+## Residual diagnostics
+
+@fig-resid addresses model adequacy rather than fishery interpretation.
+The intent is to check whether the beta regression leaves obvious structure in
+the residuals or shows departures large enough to undermine the main inferences.
+
+```{r}
+#| label: fig-resid
+#| fig-cap: "Residual diagnostics for Model 3 (beta regression with individual category scores)."
+#| fig-width: 9
+#| fig-height: 4
+
+p_resid <- dat |>
+  mutate(fitted = fitted(m3),
+         resid  = residuals(m3, type = "sweighted2")) |>
+  ggplot(aes(x = fitted, y = resid)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey60") +
+  geom_point(size = 2, alpha = 0.7) +
+  labs(x = "Fitted value", y = "Weighted residual",
+       subtitle = "Residuals vs. fitted")
+
+p_qq <- dat |>
+  mutate(resid = residuals(m3, type = "sweighted2")) |>
+  ggplot(aes(sample = resid)) +
+  stat_qq(size = 2, alpha = 0.7) +
+  stat_qq_line(color = "steelblue") +
+  labs(x = "Theoretical quantile", y = "Sample quantile",
+       subtitle = "Normal Q-Q plot")
+
+p_resid + p_qq
+```
+
+These diagnostics do not need to look perfect to be useful, but @fig-resid
+helps distinguish a modestly noisy descriptive model from one that is plainly
+misspecified.
+
+## Discussion
+
+Several patterns emerge:
+
+1. **Population dynamics (P) scores are the strongest individual predictor**
+   of larger reductions, consistent with the SSC weighting biomass trajectory
+   and recruitment concerns heavily.
+   That signal persists in the Bayesian mixed-effects fit in @tbl-brms-fixed,
+   although the posterior intervals remain fairly wide.
+
+2. **Total score is a weak overall predictor.** The SSC clearly applies
+   considerable judgment beyond what the risk scores encode—stock identity,
+   economic context, and the specific nature of each concern all matter.
+   This is consistent with the dispersion visible in @fig-scatter-total and
+   the comparison between aggregated and category-level models in @tbl-compare.
+
+3. **Outliers are informative.** EBS Pollock 2022 (A-2 only, 43% reduction)
+   and EBS Pollock 2021 (A-2, E-2, F-2, only 11%) illustrate that
+   stock-specific context can dominate the risk table signal.
+   Those difficult cases are also evident in @fig-obs-fit, where even better
+   performing models do not fully recover every stock-year outcome.
+
+4. **Sample size limits model complexity.** With *n* = 21 observations across
+   13 stocks, more structured models are feasible but still uncertain.
+   The Bayesian mixed-effects model in @tbl-brms-fixed helps by partially
+   pooling repeated stock observations, yet the intervals remain wide enough
+   that the fitted relationships should still be treated cautiously.
+
+5. **The risk table is an input to, not a determinant of, the SSC decision.**
+   Any predictive model should be understood as describing central tendency
+   rather than prescribing outcomes.
+
+## Report context and interpretation
+
+The broader 2024 update emphasized that reductions from maximum permissible
+ABC have occurred for a limited set of stocks over the lifetime of the risk
+table process. Those stocks include one Alaska-wide stock (sablefish), eight
+stocks from the BSAI, and five from the GOA. In most cases where authors
+recommended a reduction, the SSC agreed, but there were also important
+exceptions where the SSC either imposed a reduction that authors had not
+proposed or declined to adopt a proposed reduction.
+
+That pattern aligns with the fitted results here. The scores contain real
+signal, especially for population and broader multi-category concern, but they
+do not encode the full decision process. The SSC appears to use the risk table
+as a structured summary of uncertainty and concern, then combine it with
+stock-specific considerations, model behavior, and management judgment when
+setting the final buffer below maxABC.
+
+For that reason, the models in this document are best used as exploratory
+benchmarks. They help summarize what kinds of score combinations have
+historically coincided with larger reductions, but they should not be treated
+as a mechanical rule for future assessments operating under a still-evolving
+risk table framework.
