@@ -1,0 +1,1291 @@
+                                                                            C1 Groundfish Risk Table Update
+                                                                                            December 2024
+
+
+
+
+Groundfish Risk Table Report: 2024 Update
+History of Groundfish Risk Table Level Development
+We collected risk table scores for groundfish stocks in the Bering Sea and Aleutian Islands
+(BSAI) and the Gulf of Alaska (GOA) fishery management plans from 2018 to present. During
+the first year of risk table implementation, 2018, only a handful of stocks completed their risk
+tables on a trial basis. Additionally, only three categories existed for the risk tables at that time,
+assessment, population dynamics, and ecosystem. The fourth category, fishery performance,
+was added in 2019. In 2021, the Scientific and Statistical Committee (SSC) requested that the
+four scoring levels be reduced to three (normal, increased, extreme). This reduction in levels did
+not occur until 2023, and using this reduced scoring, the levels 2 and 3 were approximately
+equivalent to the previous levels 3 and 4, respectively. In 2024, the text in the risk table
+categories was updated in response to an SSC request to revise the category descriptions to
+cover the range intended by the original table (SSC Minutes, December 2023). The new table
+descriptions are included in the 2024 BSAI and GOA SAFE Introduction. Because of these
+fluctuations in risk table levels and definitions, caution should be taken when comparing the
+2018 trial year and recent reduced level years (2023 to present) with the interim years (2019-
+2022) of risk tables scores.
+
+
+Risk Table Working Group
+An AFSC working group was formed in early 2024 to review all the scores to date of the
+groundfish risk tables and summarize those results in one place. This effort created a living
+repository of the scores in a Google drive to serve as a reference for stock assessment authors
+as they deliberate over the risk tables. The collated information also allows documentation of
+the approaches authors have used to develop any reductions over time and identify any
+commonalities among risk tables. The summary table includes all the annual risk table scores
+by category (assessment-related considerations, population dynamics considerations,
+ecosystem considerations, and fishery-informed stock considerations), the maximum score
+across the categories, the author suggested reductions, the SSC recommended reduction, the
+method used to derive the reduction, and the reason (if any) for differing reduction
+recommendations between the authors, the Plan Team, or the SSC. The working group
+provided a presentation to the AFSC stock assessment authors of the initial summary table
+results (2018-2023) to gather feedback on the process. Following this presentation, the working
+group adjusted the summary graphics and tables for a more streamlined view and prepared the
+summary table for including the current year scores following the 2024 November Groundfish
+Plan Team.
+                                                                       C1 Groundfish Risk Table Update
+                                                                                       December 2024
+
+
+
+
+Risk Table Summary
+A total of 136 risk tables have been developed since 2018. Table 1 provides an overall
+summary of these risk tables, broken down by all Alaska, BSAI, and the GOA regions. Figures
+1-3 provide a graphical representation of this summary table. There have been 77 risk tables for
+stocks with at least one elevated score, 59 risk tables for stocks without elevated scores, 25
+stocks with author recommended reductions from maximum ABC, and 28 stocks with final
+reductions following review from the Groundfish Plan Team and SSC.
+
+Table 2 provides a detailed look at the scores by risk table category for each stock over time
+along with the author recommended reduction and the SSC recommended reduction. A series
+of notes following Table 2 provides more details on the method used to derive the reduction and
+the reason for the adjustment by the Plan Team or SSC. A blank cell in this table means there
+was no score or risk table for the stock that year because it was an off-cycle year. However, a
+reduction may still occur in an off-cycle year due to a previous risk table decision.
+
+Generally, the total number of stocks with reductions from maximum permissible ABC is
+relatively low compared to the total number of risk tables produced. Stocks with elevated scores
+seem to be stabilizing, although this fluctuates more in the BSAI during on and off-cycle years.
+The number of stocks with author recommended reductions had been increasing in the BSAI
+but started decreasing in 2023 and more so in 2024. In the GOA, the initial trial year had more
+stocks with author recommended reductions and has been decreasing ever since and stabilized
+in the last three years.
+
+A variety of methods have been used to develop the recommended percent reduction from
+maximum ABC.
+    ● Author deferred to SSC to provide a reduction if warranted
+    ● Tier 3 advice used for tier 1 stock (EBS pollock and yellowfin sole)
+    ● Previous projection results (e.g., BSAI blackspotted/ rougheye used the 2021 projections
+        for 2023 ABC)
+    ● Grant Thompson method (Appendix 2.6) - joint probability of max ABC exceeding true
+        OFL and any elevated score leading to maxABC exceeding true OFL
+    ● Thompson (2018) tabulated the mode of buffers for the period 2003-2017 as 10-20%,
+        author used this as a guideline to set recommended buffer
+    ● Author identified level of ABC required to maintain the stock above B20%
+    ● ABC from alternative model run that resulted in better retrospective pattern, fit to data,
+        and lower OFL and ABC
+    ● Stair-step approach - split difference between this year’s estimate of ABC and the
+        previous year’s projected estimate
+    ● Reductions in recent recruitment estimates or reference period (e.g., sablefish, BSAI
+        blackspotted/rougheye rockfish)
+In most cases, if an author recommends a reduction, the SSC has generally agreed with the
+proposal, although there have been exceptions as with sablefish in 2019 and 2020 when a
+stairstep was used instead, or when they disagreed with the author recommendation as with
+                                                                        C1 Groundfish Risk Table Update
+                                                                                        December 2024
+
+
+
+
+Greenland turbot in 2023 and did not put forward a reduction. There have also been a few
+cases when the author did not propose a reduction, but the SSC did in response to elevated risk
+table scores such as with GOA dusky rockfish in 2020, Aleutian Islands Pacific cod, and GOA
+pollock in 2023. A few times in 2019, some authors provided a complete risk table evaluation
+and suggested that a reduction from maximum permissible ABC was justified, and did not
+provide a recommended reduction amount. Instead, the authors deferred to the SSC following
+discussion on this topic in the 2018 SSC minutes on the risk table (December 2018, SSC, pg.
+2). The SSC did not reduce in two of the deferred cases and in one case used the ensemble
+model for EBS Pacific cod as a reduction from the single model ABC.
+
+This risk table summary serves as a living comprehensive documentation of the scoring for all
+groundfish risk tables and characterizes how risk tables have been used for proposed and final
+reductions following Plan Team and SSC review. Reductions have occurred for 14 stocks over
+the tenure of the risk tables. This includes one Alaska-wide stock (sablefish), eight stocks from
+the BSAI (EBS pollock, EBS Pacific cod, AI Pacific cod, BSAI yellowfin sole, BSAI Northern rock
+sole, BSAI blackspotted/rougheye rockfish, BSAI Greenland turbot, and BSAI sharks) and five
+stocks from the GOA (GOA pollock, GOA Pacific cod, GOA dusky rockfish, GOA demersal shelf
+rockfish, and GOA rougheye/blackspotted rockfish). Authors and reviewers of the risk tables
+may use this report as reference of the groundfish risk table development over time and to
+identify any commonalities among the stocks for use in future risk tables.
+
+Please contact Kalei Shotwell (kalei.shotwell@noaa.gov) and Meaghan Bryan
+(meaghan.bryan@noaa.gov) for any questions on this report.
+                                                                                                          C1 Groundfish Risk Table Update
+                                                                                                                          December 2024
+
+
+
+
+Tables
+
+Table 1. Summary of risk table scores by region from 2018 to present.
+                                                                                          Stocks with author
+                                                    Stocks with         Stocks without      recommended            Stocks with
+Year            Region      Total # risk tables   elevated scores       elevated scores       reductions           reductions
+2018            Alaska              5                    4                    1                   4                       4
+2019            Alaska              18                  10                    8                   3                       4
+2020            Alaska              28                  14                    14                  2                       3
+2021            Alaska              18                  11                    7                   2                       5
+2022            Alaska              25                  14                    11                  6                       5
+2023            Alaska              16                  11                    5                   5                       7
+2024            Alaska              26                  13                    13                  3
+2018             BSAI               2                    1                    1                   1                       1
+2019             BSAI               7                    4                    3                   1                       2
+2020             BSAI               20                   9                    11                  1                       1
+2021             BSAI               7                    5                    2                   2                       2
+2022             BSAI               16                   9                    7                   5                       4
+2023             BSAI               7                    5                    2                   4                       5
+2024             BSAI               17                   9                    8                   2
+2018             GOA                3                    3                    0                   3                       3
+2019             GOA                11                   6                    5                   2                       2
+2020             GOA                8                    5                    3                   1                       2
+2021             GOA                11                   6                    5                   0                       3
+2022             GOA                9                    5                    4                   1                       1
+2023             GOA                9                    6                    3                   1                       2
+2024             GOA                9                    4                    5                   1
+                                                                                                         C1 Groundfish Risk Table Update
+                                                                                                                         December 2024
+
+
+
+
+Table 2. Risk table scores by category for all groundfish stocks for assessment years 2018 to present. NA means no score because
+the risk table was not completed that year. "Author suggested reduction" is the recommendation to reduce from maximum ABC
+provided in the stock assessment and fishery evaluation (SAFE) report. "SSC recommended reduction" is the recommendation from
+the Scientific and Statistical Committee (SSC) either in agreement with the author's recommendation or a new recommendation
+following deliberation (current year is not yet completed and therefore blank).
+
+                                                               Fishery
+                               Assessment                     informed      Population               Author       SSC
+                                 related       Ecosystem        stock       dynamics               suggested recommended
+Region     Stock       Year   considerations considerations consideration considerations Max score reduction   reduction
+
+ BSAI      AI Pcod     2018
+
+ BSAI      AI Pcod     2019         1               2               1              1            2       Deferred
+
+ BSAI      AI Pcod     2020         1               2               1              1            2
+
+ BSAI      AI Pcod     2021         2               2               1              1            2
+
+ BSAI      AI Pcod     2022         1               2               1              2            2
+
+ BSAI      AI Pcod     2023         1               2               1              2            2                            0.1
+
+ BSAI      AI Pcod     2024         1               2               1              2            2
+
+ BSAI     AI pollock   2018
+
+ BSAI     AI pollock   2019
+
+ BSAI     AI pollock   2020         1               1               1              1            1
+
+ BSAI     AI pollock   2021
+
+ BSAI     AI pollock   2022         1               1               1              1            1
+
+ BSAI     AI pollock   2023
+
+ BSAI     AI pollock   2024         1               1               1              1            1
+          Bogoslof
+ BSAI      pollock     2018
+                                                                                                  C1 Groundfish Risk Table Update
+                                                                                                                  December 2024
+
+
+
+
+                                                               Fishery
+                               Assessment                     informed      Population               Author       SSC
+                                 related       Ecosystem        stock       dynamics               suggested recommended
+Region     Stock       Year   considerations considerations consideration considerations Max score reduction   reduction
+          Bogoslof
+BSAI       pollock     2019
+          Bogoslof
+BSAI       pollock     2020        1              1             1             1           1
+          Bogoslof
+BSAI       pollock     2021
+          Bogoslof
+BSAI       pollock     2022        1              1             1             1           1
+          Bogoslof
+BSAI       pollock     2023
+          Bogoslof
+BSAI       pollock     2024        1              1             1             1           1
+         BSAI Alaska
+BSAI       Plaice      2018
+         BSAI Alaska
+BSAI       Plaice      2019
+         BSAI Alaska
+BSAI       Plaice      2020
+         BSAI Alaska
+BSAI       Plaice      2021        1              1             1             1           1
+         BSAI Alaska
+BSAI       Plaice      2022
+         BSAI Alaska
+BSAI       Plaice      2023
+                                                                                                  C1 Groundfish Risk Table Update
+                                                                                                                  December 2024
+
+
+
+
+                                                               Fishery
+                               Assessment                     informed      Population               Author       SSC
+                                 related       Ecosystem        stock       dynamics               suggested recommended
+Region     Stock       Year   considerations considerations consideration considerations Max score reduction   reduction
+         BSAI Alaska
+BSAI       Plaice      2024        1              1             1             1           1
+            BSAI
+         Arrowtooth
+BSAI      flounder     2018
+            BSAI
+         Arrowtooth
+BSAI      flounder     2019
+            BSAI
+         Arrowtooth
+BSAI      flounder     2020        1              1             1             1           1
+            BSAI
+         Arrowtooth
+BSAI      flounder     2021
+            BSAI
+         Arrowtooth
+BSAI      flounder     2022        1              1             1             1           1
+            BSAI
+         Arrowtooth
+BSAI      flounder     2023
+            BSAI
+         Arrowtooth
+BSAI      flounder     2024
+         BSAI Atka
+BSAI     Mackerel      2018        1              1                           1           1
+         BSAI Atka
+BSAI     Mackerel      2019        1              1             1             1           1
+                                                                                                   C1 Groundfish Risk Table Update
+                                                                                                                   December 2024
+
+
+
+
+                                                                Fishery
+                                Assessment                     informed      Population               Author       SSC
+                                  related       Ecosystem        stock       dynamics               suggested recommended
+Region      Stock       Year   considerations considerations consideration considerations Max score reduction   reduction
+          BSAI Atka
+BSAI      Mackerel      2020        1              1             1             1           1
+          BSAI Atka
+BSAI      Mackerel      2021        1              1             1             1           1
+          BSAI Atka
+BSAI      Mackerel      2022        2              2             1             1           2
+          BSAI Atka
+BSAI      Mackerel      2023
+          BSAI Atka
+BSAI      Mackerel      2024        1              2             1             1           2
+             BSAI
+         Blackspotted
+BSAI     / Rougheye     2018
+             BSAI
+         Blackspotted
+BSAI     / Rougheye     2019
+             BSAI
+         Blackspotted
+BSAI     / Rougheye     2020        3              1             2             2           3
+             BSAI
+         Blackspotted
+BSAI     / Rougheye     2021
+             BSAI
+         Blackspotted
+BSAI     / Rougheye     2022        3              1             2             2           3        0.11              0.11
+                                                                                                   C1 Groundfish Risk Table Update
+                                                                                                                   December 2024
+
+
+
+
+                                                                Fishery
+                                Assessment                     informed      Population               Author       SSC
+                                  related       Ecosystem        stock       dynamics               suggested recommended
+Region      Stock       Year   considerations considerations consideration considerations Max score reduction   reduction
+             BSAI
+         Blackspotted
+BSAI     / Rougheye     2023                                                                        0.11              0.11
+             BSAI
+         Blackspotted
+BSAI     / Rougheye     2024        2              1             2             2           2
+            BSAI
+          Flathead
+BSAI        sole        2018
+            BSAI
+          Flathead
+BSAI        sole        2019
+            BSAI
+          Flathead
+BSAI        sole        2020        1              1             1             1           1
+            BSAI
+          Flathead
+BSAI        sole        2021
+            BSAI
+          Flathead
+BSAI        sole        2022
+            BSAI
+          Flathead
+BSAI        sole        2023
+            BSAI
+          Flathead
+BSAI        sole        2024        1              1             1             1           1
+                                                                                                C1 Groundfish Risk Table Update
+                                                                                                                December 2024
+
+
+
+
+                                                             Fishery
+                             Assessment                     informed      Population               Author       SSC
+                               related       Ecosystem        stock       dynamics               suggested recommended
+Region     Stock     Year   considerations considerations consideration considerations Max score reduction   reduction
+            BSAI
+         Greenland
+BSAI       turbot    2018
+            BSAI
+         Greenland
+BSAI       turbot    2019
+            BSAI
+         Greenland
+BSAI       turbot    2020        1              2             1             1           2
+            BSAI
+         Greenland
+BSAI       turbot    2021
+            BSAI
+         Greenland
+BSAI       turbot    2022        2              1             1             2           2        0.06
+            BSAI
+         Greenland
+BSAI       turbot    2023
+            BSAI
+         Greenland
+BSAI       turbot    2024        3              1             2             2           3         0.1
+           BSAI
+BSAI     Kamchatka   2018
+           BSAI
+BSAI     Kamchatka   2019
+           BSAI
+BSAI     Kamchatka   2020        1              1             1             1           1
+                                                                                                C1 Groundfish Risk Table Update
+                                                                                                                December 2024
+
+
+
+
+                                                             Fishery
+                             Assessment                     informed      Population               Author       SSC
+                               related       Ecosystem        stock       dynamics               suggested recommended
+Region     Stock     Year   considerations considerations consideration considerations Max score reduction   reduction
+           BSAI
+BSAI     Kamchatka   2021
+           BSAI
+BSAI     Kamchatka   2022        2              1             1             1           2
+           BSAI
+BSAI     Kamchatka   2023
+           BSAI
+BSAI     Kamchatka   2024        2              1             1             1           2
+           BSAI
+          Northern
+BSAI      rockfish   2018
+           BSAI
+          Northern
+BSAI      rockfish   2019        2              2             1             1           2
+           BSAI
+          Northern
+BSAI      rockfish   2020
+           BSAI
+          Northern
+BSAI      rockfish   2021        2              1             1             1           2
+           BSAI
+          Northern
+BSAI      rockfish   2022
+           BSAI
+          Northern
+BSAI      rockfish   2023        2              1             1             2           2
+                                                                                               C1 Groundfish Risk Table Update
+                                                                                                               December 2024
+
+
+
+
+                                                            Fishery
+                            Assessment                     informed      Population               Author       SSC
+                              related       Ecosystem        stock       dynamics               suggested recommended
+Region    Stock     Year   considerations considerations consideration considerations Max score reduction   reduction
+          BSAI
+         Northern
+BSAI     rockfish   2024
+
+BSAI     BSAI NRS   2018
+
+BSAI     BSAI NRS   2019
+
+BSAI     BSAI NRS   2020        2              1             1             1           2
+
+BSAI     BSAI NRS   2021
+
+BSAI     BSAI NRS   2022        3              1             1             1           3        0.23              0.23
+
+BSAI     BSAI NRS   2023                                                                        0.36              0.36
+
+BSAI     BSAI NRS   2024        1              1             1             1           1
+          BSAI
+BSAI     Octopus    2018
+          BSAI
+BSAI     Octopus    2019        1              1             1             1           1
+          BSAI
+BSAI     Octopus    2020        1              1             1             1           1
+          BSAI
+BSAI     Octopus    2021
+          BSAI
+BSAI     Octopus    2022
+          BSAI
+BSAI     Octopus    2023        1              1             1             1           1
+                                                                                                 C1 Groundfish Risk Table Update
+                                                                                                                 December 2024
+
+
+
+
+                                                              Fishery
+                              Assessment                     informed      Population               Author       SSC
+                                related       Ecosystem        stock       dynamics               suggested recommended
+Region     Stock      Year   considerations considerations consideration considerations Max score reduction   reduction
+           BSAI
+BSAI      Octopus     2024
+         BSAI Other
+BSAI      Flatfish    2018
+         BSAI Other
+BSAI      Flatfish    2019
+         BSAI Other
+BSAI      Flatfish    2020        1              1             1             1           1
+         BSAI Other
+BSAI      Flatfish    2021
+         BSAI Other
+BSAI      Flatfish    2022
+         BSAI Other
+BSAI      Flatfish    2023
+         BSAI Other
+BSAI      Flatfish    2024        1              1             1             1           1
+         BSAI Other
+BSAI      rockfish    2018
+         BSAI Other
+BSAI      rockfish    2019
+         BSAI Other
+BSAI      rockfish    2020        2              1             1             1           2
+         BSAI Other
+BSAI      rockfish    2021
+                                                                                                 C1 Groundfish Risk Table Update
+                                                                                                                 December 2024
+
+
+
+
+                                                              Fishery
+                              Assessment                     informed      Population               Author       SSC
+                                related       Ecosystem        stock       dynamics               suggested recommended
+Region     Stock      Year   considerations considerations consideration considerations Max score reduction   reduction
+         BSAI Other
+BSAI      rockfish    2022        1              1             1             1           1
+         BSAI Other
+BSAI      rockfish    2023
+         BSAI Other
+BSAI      rockfish    2024        2              1             2             2           2
+
+BSAI     BSAI POP     2018
+
+BSAI     BSAI POP     2019
+
+BSAI     BSAI POP     2020        2              1             1             1           2
+
+BSAI     BSAI POP     2021
+
+BSAI     BSAI POP     2022        2              1             1             1           2
+
+BSAI     BSAI POP     2023
+
+BSAI     BSAI POP     2024        2              1             1             1           2
+           BSAI
+BSAI      Sculpins    2018
+           BSAI
+BSAI      Sculpins    2019
+           BSAI
+BSAI      Sculpins    2020
+           BSAI
+BSAI      Sculpins    2021
+           BSAI
+BSAI      Sculpins    2022
+                                                                                                  C1 Groundfish Risk Table Update
+                                                                                                                  December 2024
+
+
+
+
+                                                               Fishery
+                               Assessment                     informed      Population               Author       SSC
+                                 related       Ecosystem        stock       dynamics               suggested recommended
+Region     Stock       Year   considerations considerations consideration considerations Max score reduction   reduction
+           BSAI
+BSAI      Sculpins     2023
+           BSAI
+BSAI      Sculpins     2024
+
+BSAI     BSAI sharks   2018
+
+BSAI     BSAI sharks   2019
+
+BSAI     BSAI sharks   2020        2              1             1             2           2
+
+BSAI     BSAI sharks   2021
+
+BSAI     BSAI sharks   2022        3              1             1             2           3        0.13              0.13
+
+BSAI     BSAI sharks   2023                                                                        0.13              0.13
+
+BSAI     BSAI sharks   2024                                                                        0.13
+           BSAI
+         Shortraker
+BSAI      rockfish     2018
+           BSAI
+         Shortraker
+BSAI      rockfish     2019
+           BSAI
+         Shortraker
+BSAI      rockfish     2020        1              1             1             1           1
+           BSAI
+         Shortraker
+BSAI      rockfish     2021
+                                                                                                  C1 Groundfish Risk Table Update
+                                                                                                                  December 2024
+
+
+
+
+                                                               Fishery
+                               Assessment                     informed      Population               Author       SSC
+                                 related       Ecosystem        stock       dynamics               suggested recommended
+Region     Stock       Year   considerations considerations consideration considerations Max score reduction   reduction
+           BSAI
+         Shortraker
+BSAI      rockfish     2022        1              1             1             1           1
+           BSAI
+         Shortraker
+BSAI      rockfish     2023
+           BSAI
+         Shortraker
+BSAI      rockfish     2024        2              1             1             1           2
+
+BSAI     BSAI skates   2018
+
+BSAI     BSAI skates   2019
+
+BSAI     BSAI skates   2020        1              1             1             1           1
+
+BSAI     BSAI skates   2021
+
+BSAI     BSAI skates   2022
+
+BSAI     BSAI skates   2023        2              1             1             1           2
+
+BSAI     BSAI skates   2024
+
+BSAI     BSAI YFS      2018
+
+BSAI     BSAI YFS      2019        1              1             1             1           1
+
+BSAI     BSAI YFS      2020        1              1             1             1           1
+
+BSAI     BSAI YFS      2021        1              2             1             2           2        0.24              0.24
+
+BSAI     BSAI YFS      2022        1              1             1             1           1
+
+BSAI     BSAI YFS      2023        1              2             1             2           2
+                                                                                                  C1 Groundfish Risk Table Update
+                                                                                                                  December 2024
+
+
+
+
+                                                               Fishery
+                               Assessment                     informed      Population               Author       SSC
+                                 related       Ecosystem        stock       dynamics               suggested recommended
+Region     Stock       Year   considerations considerations consideration considerations Max score reduction   reduction
+
+BSAI     BSAI YFS      2024        1              1             1             1           1
+
+BSAI     EBS Pcod      2018
+
+BSAI     EBS Pcod      2019        1              2             1             1           2      Deferred         Ensemble
+
+BSAI     EBS Pcod      2020        1              2             1             1           2
+
+BSAI     EBS Pcod      2021        1              2             1             1           2
+
+BSAI     EBS Pcod      2022        1              1             1             1           1
+
+BSAI     EBS Pcod      2023        1              1             1             1           1
+
+BSAI     EBS Pcod      2024        1              2             1             1           2
+
+BSAI     EBS pollock   2018        1              2                           2           2         0.3               0.3
+
+BSAI     EBS pollock   2019        1              2             2             2           2        0.43              0.43
+
+BSAI     EBS pollock   2020        1              2             2             1           2         0.3               0.3
+
+BSAI     EBS pollock   2021        2              2             2             2           2        0.11              0.11
+
+BSAI     EBS pollock   2022        2              1             1             1           2        0.43              0.43
+
+BSAI     EBS pollock   2023        1              2             1             1           2        0.18              0.18
+
+BSAI     EBS pollock   2024        1              1             1             1           2
+            GOA
+ GOA     Arrowtooth    2018
+            GOA
+ GOA     Arrowtooth    2019        1              2             1             1           2
+            GOA
+ GOA     Arrowtooth    2020
+                                                                                                 C1 Groundfish Risk Table Update
+                                                                                                                 December 2024
+
+
+
+
+                                                              Fishery
+                              Assessment                     informed      Population               Author       SSC
+                                related       Ecosystem        stock       dynamics               suggested recommended
+Region     Stock      Year   considerations considerations consideration considerations Max score reduction   reduction
+            GOA
+ GOA     Arrowtooth   2021        1              1             1             1           1
+            GOA
+ GOA     Arrowtooth   2022
+            GOA
+ GOA     Arrowtooth   2023
+            GOA
+ GOA     Arrowtooth   2024
+           GOA
+         Deepwater
+ GOA      Flatfish    2018
+           GOA
+         Deepwater
+ GOA      Flatfish    2019        2              1             1             1           2
+           GOA
+         Deepwater
+ GOA      Flatfish    2020
+           GOA
+         Deepwater
+ GOA      Flatfish    2021
+           GOA
+         Deepwater
+ GOA      Flatfish    2022
+           GOA
+         Deepwater
+ GOA      Flatfish    2023        2              1             1             1           2
+                                                                                                   C1 Groundfish Risk Table Update
+                                                                                                                   December 2024
+
+
+
+
+                                                                Fishery
+                                Assessment                     informed      Population               Author       SSC
+                                  related       Ecosystem        stock       dynamics               suggested recommended
+Region      Stock       Year   considerations considerations consideration considerations Max score reduction   reduction
+            GOA
+          Deepwater
+ GOA       Flatfish     2024
+             GOA
+          Demersal
+ GOA       rockfish     2018
+             GOA
+          Demersal
+ GOA       rockfish     2019
+             GOA
+          Demersal
+ GOA       rockfish     2020
+             GOA
+          Demersal
+ GOA       rockfish     2021        2              1             2             2           2                          0.22
+             GOA
+          Demersal
+ GOA       rockfish     2022        2              1             2             2           2        0.15              0.15
+             GOA
+          Demersal
+ GOA       rockfish     2023
+             GOA
+           demersal
+ GOA     rockfish SEO   2024        2              1             2             3           3         0.2
+                                                                                                C1 Groundfish Risk Table Update
+                                                                                                                December 2024
+
+
+
+
+                                                             Fishery
+                             Assessment                     informed      Population               Author       SSC
+                               related       Ecosystem        stock       dynamics               suggested recommended
+Region     Stock     Year   considerations considerations consideration considerations Max score reduction   reduction
+            GOA
+         demersal
+          rockfish
+ GOA     WG/CG/Y     2024        1              1             1             1           1
+         GOA Dusky
+ GOA      rockfish   2018
+         GOA Dusky
+ GOA      rockfish   2019
+         GOA Dusky
+ GOA      rockfish   2020        2              1             1             1           2                          0.24
+         GOA Dusky
+ GOA      rockfish   2021                                                                                          0.22
+         GOA Dusky
+ GOA      rockfish   2022        2              1             1             2           2
+         GOA Dusky
+ GOA      rockfish   2023
+         GOA Dusky
+ GOA      rockfish   2024        2              1             1             1           2
+            GOA
+          Flathead
+ GOA        sole     2018
+            GOA
+          Flathead
+ GOA        sole     2019
+                                                                                               C1 Groundfish Risk Table Update
+                                                                                                               December 2024
+
+
+
+
+                                                            Fishery
+                            Assessment                     informed      Population               Author       SSC
+                              related       Ecosystem        stock       dynamics               suggested recommended
+Region    Stock     Year   considerations considerations consideration considerations Max score reduction   reduction
+           GOA
+         Flathead
+ GOA       sole     2020
+           GOA
+         Flathead
+ GOA       sole     2021
+           GOA
+         Flathead
+ GOA       sole     2022        1              1             1             1           1
+           GOA
+         Flathead
+ GOA       sole     2023
+           GOA
+         Flathead
+ GOA       sole     2024
+          GOA
+         Northern
+ GOA     Rockfish   2018
+          GOA
+         Northern
+ GOA     Rockfish   2019
+          GOA
+         Northern
+ GOA     Rockfish   2020        1              1             1             1           1
+          GOA
+         Northern
+ GOA     Rockfish   2021
+                                                                                                C1 Groundfish Risk Table Update
+                                                                                                                December 2024
+
+
+
+
+                                                             Fishery
+                             Assessment                     informed      Population               Author       SSC
+                               related       Ecosystem        stock       dynamics               suggested recommended
+Region    Stock      Year   considerations considerations consideration considerations Max score reduction   reduction
+          GOA
+         Northern
+ GOA     Rockfish    2022        1              1             1             2           2
+          GOA
+         Northern
+ GOA     Rockfish    2023
+          GOA
+         Northern
+ GOA     Rockfish    2024        1              1             1             2           2
+          GOA
+ GOA     Octopus     2018
+          GOA
+ GOA     Octopus     2019        1              1             1             1           1
+          GOA
+ GOA     Octopus     2020
+          GOA
+ GOA     Octopus     2021
+          GOA
+ GOA     Octopus     2022
+          GOA
+ GOA     Octopus     2023
+          GOA
+ GOA     Octopus     2024
+         GOA other
+ GOA      rockfish   2018
+                                                                                                  C1 Groundfish Risk Table Update
+                                                                                                                  December 2024
+
+
+
+
+                                                               Fishery
+                               Assessment                     informed      Population               Author       SSC
+                                 related       Ecosystem        stock       dynamics               suggested recommended
+Region     Stock       Year   considerations considerations consideration considerations Max score reduction   reduction
+         GOA other
+ GOA      rockfish     2019        1              1             1             1           1
+         GOA other
+ GOA      rockfish     2020
+         GOA other
+ GOA      rockfish     2021
+         GOA other
+ GOA      rockfish     2022
+         GOA other
+ GOA      rockfish     2023        1              1             1             1           1
+         GOA other
+ GOA      rockfish     2024        1              1             1             1           1
+
+ GOA     GOA Pcod      2018        2              2                           4           4        0.14              0.14
+
+ GOA     GOA Pcod      2019        2              2             1             2           2      Deferred
+
+ GOA     GOA Pcod      2020        2              1             1             2           2
+                                                                                                               2021 ABC set
+ GOA     GOA Pcod      2021        1              1             1             1           1                    to 2020 ABC
+
+ GOA     GOA Pcod      2022        2              1             1             2           2
+
+ GOA     GOA Pcod      2023        1              1             1             2           2
+
+ GOA     GOA Pcod      2024        1              1             1             2           2
+
+ GOA     GOA pollock   2018        2              2                           2           2        0.15              0.15
+
+ GOA     GOA pollock   2019        2              1             1             1           2         0.1               0.1
+
+ GOA     GOA pollock   2020        1              1             1             1           1
+                                                                                                  C1 Groundfish Risk Table Update
+                                                                                                                  December 2024
+
+
+
+
+                                                               Fishery
+                               Assessment                     informed      Population               Author       SSC
+                                 related       Ecosystem        stock       dynamics               suggested recommended
+Region     Stock       Year   considerations considerations consideration considerations Max score reduction   reduction
+
+ GOA     GOA pollock   2021        1              1             1             1           1
+
+ GOA     GOA pollock   2022        1              1             1             1           1
+
+ GOA     GOA pollock   2023        2              1             1             1           2                          0.18
+
+ GOA     GOA pollock   2024        1              1             1             1           1
+
+ GOA     GOA POP       2018
+
+ GOA     GOA POP       2019        2              1             1             2           2
+
+ GOA     GOA POP       2020        2              1             1             2           2
+
+ GOA     GOA POP       2021        2              1             1             2           2
+
+ GOA     GOA POP       2022
+
+ GOA     GOA POP       2023        2              1             1             2           2
+
+ GOA     GOA POP       2024
+          GOA Rex
+ GOA        sole       2018
+          GOA Rex
+ GOA        sole       2019
+          GOA Rex
+ GOA        sole       2020
+          GOA Rex
+ GOA        sole       2021        2              1             1             2           2
+          GOA Rex
+ GOA        sole       2022
+                                                                                                   C1 Groundfish Risk Table Update
+                                                                                                                   December 2024
+
+
+
+
+                                                                Fishery
+                                Assessment                     informed      Population               Author       SSC
+                                  related       Ecosystem        stock       dynamics               suggested recommended
+Region      Stock       Year   considerations considerations consideration considerations Max score reduction   reduction
+          GOA Rex
+ GOA        sole        2023
+          GOA Rex
+ GOA        sole        2024
+             GOA
+         Rougheye /
+ GOA     Blackspotted   2018
+             GOA
+         Rougheye /
+ GOA     Blackspotted   2019        1              1             1             1           1
+             GOA
+         Rougheye /
+ GOA     Blackspotted   2020
+             GOA
+         Rougheye /
+ GOA     Blackspotted   2021        2              1             1             1           2
+             GOA
+         Rougheye /
+ GOA     Blackspotted   2022
+             GOA
+         Rougheye /
+ GOA     Blackspotted   2023        2              1             1             2           2         0.2               0.2
+             GOA
+         Rougheye /
+ GOA     Blackspotted   2024
+
+ GOA     GOA sculpin    2018
+                                                                                                   C1 Groundfish Risk Table Update
+                                                                                                                   December 2024
+
+
+
+
+                                                                Fishery
+                                Assessment                     informed      Population               Author       SSC
+                                  related       Ecosystem        stock       dynamics               suggested recommended
+Region      Stock       Year   considerations considerations consideration considerations Max score reduction   reduction
+
+ GOA     GOA sculpin    2019
+
+ GOA     GOA sculpin    2020
+
+ GOA     GOA sculpin    2021
+
+ GOA     GOA sculpin    2022
+
+ GOA     GOA sculpin    2023
+
+ GOA     GOA sculpin    2024
+             GOA
+         Northern and
+          Southern
+ GOA      Rock Sole     2018
+             GOA
+         Northern and
+          Southern
+ GOA      Rock Sole     2019
+             GOA
+         Northern and
+          Southern
+ GOA      Rock Sole     2020
+             GOA
+         Northern and
+          Southern
+ GOA      Rock Sole     2021        2              1             1             1           2
+             GOA
+         Northern and
+          Southern
+ GOA      Rock Sole     2022
+                                                                                                   C1 Groundfish Risk Table Update
+                                                                                                                   December 2024
+
+
+
+
+                                                                Fishery
+                                Assessment                     informed      Population               Author       SSC
+                                  related       Ecosystem        stock       dynamics               suggested recommended
+Region      Stock       Year   considerations considerations consideration considerations Max score reduction   reduction
+             GOA
+         Northern and
+          Southern
+ GOA      Rock Sole     2023
+             GOA
+         Northern and
+          Southern
+ GOA      Rock Sole     2024
+
+ GOA     GOA Sharks     2018
+
+ GOA     GOA Sharks     2019
+
+ GOA     GOA Sharks     2020        2              1             1             2           2
+
+ GOA     GOA Sharks     2021
+
+ GOA     GOA Sharks     2022        3              1             1             2           3
+
+ GOA     GOA Sharks     2023
+
+ GOA     GOA Sharks     2024
+            GOA
+ GOA      Shortraker    2018
+            GOA
+ GOA      Shortraker    2019        1              1             1             1           1
+            GOA
+ GOA      Shortraker    2020
+            GOA
+ GOA      Shortraker    2021        1              1             1             1           1
+                                                                                                  C1 Groundfish Risk Table Update
+                                                                                                                  December 2024
+
+
+
+
+                                                               Fishery
+                               Assessment                     informed      Population               Author       SSC
+                                 related       Ecosystem        stock       dynamics               suggested recommended
+Region      Stock      Year   considerations considerations consideration considerations Max score reduction   reduction
+            GOA
+ GOA      Shortraker   2022
+            GOA
+ GOA      Shortraker   2023        1              1             1             1           1
+            GOA
+ GOA      Shortraker   2024
+
+ GOA     GOA Skates    2018
+
+ GOA     GOA Skates    2019        1              1             1             1           1
+
+ GOA     GOA Skates    2020
+
+ GOA     GOA Skates    2021        1              1             1             1           1
+
+ GOA     GOA Skates    2022
+
+ GOA     GOA Skates    2023        1              1             1             1           1
+
+ GOA     GOA Skates    2024
+            GOA
+ GOA     Thornyheads   2018
+            GOA
+ GOA     Thornyheads   2019
+            GOA
+ GOA     Thornyheads   2020        1              1             1             1           1
+            GOA
+ GOA     Thornyheads   2021
+            GOA
+ GOA     Thornyheads   2022        1              1             1             1           1
+                                                                                                  C1 Groundfish Risk Table Update
+                                                                                                                  December 2024
+
+
+
+
+                                                               Fishery
+                               Assessment                     informed      Population               Author       SSC
+                                 related       Ecosystem        stock       dynamics               suggested recommended
+Region     Stock       Year   considerations considerations consideration considerations Max score reduction   reduction
+            GOA
+ GOA     Thornyheads   2023
+            GOA
+ GOA     Thornyheads   2024        1              1             1             1           1
+
+ GOA      Sablefish    2018        2              2                           4           4        0.45              0.45
+
+ GOA      Sablefish    2019        2              2             3             3           3        0.57               0.5
+
+ GOA      Sablefish    2020        3              2             3             3           3        0.57              0.44
+
+ GOA      Sablefish    2021        1              1             2             2           2
+
+ GOA      Sablefish    2022        1              1             1             1           1
+
+ GOA      Sablefish    2023        1              1             2             1           2
+
+ GOA      Sablefish    2024        1              1             1             1           1
+                                                                                                          C1 Groundfish Risk Table Update
+                                                                                                                          December 2024
+
+
+
+
+Notes on PT or SSC Adjustment
+
+   ●   2018:
+          ○ EBS Pollock: Overall risk table score was 2 (max of the categories). The buffer was developed using the tier 3 mgmt
+             advice, which the SSC had agreed with in the past given the uncertainties outlined by the author.
+          ○ Sablefish: Lots of reasons for uncertainty (12 points see SAFE for details); ABC equal to previous year ABC = 45%
+             reduction from maxABC
+          ○ GOA Pollock: Contrasting survey trends, reliance on one strong recruitment year class in 2012, and mixed ecosystem
+             signals (with no ESP yet) resulted in scores of 2 across the categories. The SSC recommended against using a table
+             to show example alternatives to select buffers based on that risk level. Thompson (Sept 2018 document) tabulated the
+             mode of buffers for the period of 2003-2017 as 10-20 percent. The authors took this as a guideline and recommended
+             a 15% buffer to obtain the author's recommended ABC
+          ○ GOA Pacific Cod: Recommended ABC of 17,000 to maintain the stock above B20% in 2020
+   ●   2019
+          ○ EBS Pollock: Overall score is level 2 (max of individual scores). Buffer developed from the tier 3 advice
+          ○ EBS Pacific Cod: author deferred to SSC, the SSC used the single model for OFL, and the ensemble for a reduced
+             ABC from the single model.
+          ○ Sablefish: Still lots of uncertainty; 25% increase from previous year ABC was the largest increase since 1996, and a
+             25% increases = 57% reduction from maxABC, SSC recommends calculating the ABC based on a 25% stairstep
+             whereby the 2019 ABC is increased by 25% of the projected step between the 2019 ABC and the 2020 maxABC, and
+             then that estimate is corrected for whale depredation to provide the final 2020 ABC. This process was repeated to
+             estimate the 2021 ABC. The 2020 ABC represented a 50% reduction from the 2020 maxABC.
+          ○ GOA Pollock: Contrasting trends of survey indices continued to persist kept assessment concerns at level 2, but
+             presence of 2018 year class, ESP now available and more indicators evaluated (author noted on the fence between 1
+             and 2 and important to keep evaluating these indicators), and evaluation of fishery performance in the ESP kept the
+             remaining three categories at 1. Overall score was 2 suggesting that still appropriate to set the ABC below max
+             permissible. The authors stated that a buffer of 10% to address the substantially increased concerns is slightly lower
+             than the buffer applied last year to address slightly more elevated concerns and a useful starting point for PT/SSC
+             deliberations
+   ●   2020
+          ○ EBS Pollock: Overall score is level 2 (max of individual scores). Buffer developed from the tier 3 advice
+                                                                                                         C1 Groundfish Risk Table Update
+                                                                                                                         December 2024
+
+
+
+
+      ○    Sablefish: ABC equal to previous year ABC = 57% reduction from maxABC, SSC did not continue with stairstep to the
+           50%, but opted to again increase from 2020 ABC by 25% the range to the maxABC and results in 44% reduction from
+           maxABC
+      ○    GOA Dusky Rockfish: large increase in the retrospective pattern, resulting primarily from two additional years of data
+           but also potentially arising from new VAST parameterization, the SSC recommends a stair step approach for setting
+           the ABC. Under this approach, the 2021 ABC would be set halfway between the 2020 ABC (3,676t) and the 2021
+           maximum ABC from the recommended model (Model 15.5a). This would amount to a 24% decrease from the
+           maximum ABC for 2021. The 2022 ABC would be set similarly, at halfway between the 2020 ABC and the 2022
+           maximum ABC, resulting in a 23% decrease from the 2022 maximum ABC. The SSC recommends continuing with the
+           50% stair step methodology (applying a 50% stairstep between the 2020 ABC and the updated 2022 maximum ABC
+           and the same for the estimated 2023 maximum ABC) when setting specifications until a new full assessment is
+           presented for 2023
+●   2021
+       ○   EBS Pollock: The SSC requested examining Tier 2 values as an alternative. Unlike Tier 3, using Tier 2 would have a
+           constant buffer relative to the Tier 1 value (at about 11%).
+      ○    BSAI Yellowfin Sole: YFS is a tier 1 stock. Given concerns about population dynamics (Level 2: Stock trends are
+           declining at a slow but steady pace; survey estimate in 2021 was the third lowest since 1982) and
+           environmental/ecosystem concerns (Level 2: Recent data suggest concerns of thermal exposure and fish conditions in
+           the NBS) the author suggested using the mean of the Tier 1 and Tier 3 ABCs as the maximum ABC. The reasoning
+           for this is that the Tier 3 reference points are more precautionary than Tier 1 because Tier 3 methodology does not
+           assume a known spawning-recruitment relationship. This resulted in a 24% reduction.
+      ○    GOA Pacific Cod: SSC set 2021 ABC the same as the 2020 ABC
+      ○    GOA Dusky Rockfish: Same from above, per the assessment cycle
+      ○    GOA Demersal Shelf Rockfish: The maximum allowable ABC for DSR for 2022 is 342 t (322 t yelloweye + 20 t non-
+           yelloweye DSR), which is 14 t higher than the maximum allowable ABC for 2021. The DSR complex is particularly
+           vulnerable to overfishing given their longevity, late maturation, and habitat-specific residency. In addition, there is
+           increased concern for Southeast Outside (SEO) Subdistrict yelloweye rockfish, as described in the risk table.
+           Therefore, as in previous years, we recommend a harvest rate lower than the maximum allowed under Tier 4;
+           F=M=0.02.
+●   2022
+       ○   EBS Pollock: Author recommend reducing the ABC to the value provided under Tier 3 projections.
+                                                                                                         C1 Groundfish Risk Table Update
+                                                                                                                         December 2024
+
+
+
+
+      ○    BSAI Northern Rock Sole: ABC was reduced from the max ABC from the base model to the OFL of an alternative
+           model that had an improved retrospective pattern and better fit to the survey data. A general feature of the base model
+           was a strong retrospective pattern in the estimates of recent recruitment and SSB. Two alternative models that were
+           not considered for management, had improved retrospective patterns and fit to the survey data due to the
+           incorporation of data weighting methods. The OFL and ABC from the two alternative models were lower than the base
+           model. Another reason for the suggested reduction is that the probability of max ABC exceeding the true, unknown
+           OFL was high.
+      ○    BSAI Blackspotted/Rougheye Rockfish: Our recommended ABC for the AI portion of the stock is 467 t, which was
+           obtained from the 2021 projection for 2023. This is a slight increase from the value of 453 t for the AI portion of the
+           stock for 2022, and a 12% decline from the maximum ABC for the AI portion and an overal BSAI reduction of 11%.
+      ○    BSAI Sharks: BSAI sharks are a Tier 6 assessment. The 2023 assessment used a qualitative Only Reliable Catch
+           Stocks (ORCS) alternative method similar to the Restrepo et al.1998 guidance, but fit to the modern OFL/ABC
+           framework. The assessment also used the 90th percentile of the catch time series instead of the maximum historical
+           values to avoid undue influence from large or misreported hauls. The alternative 90th percent method was applied to
+           other/unidentified sharks and spiny dogfish in the BSAI. The ORCS method was applied to BSAI Pacific Sleeper
+           shark.
+      ○    GOA Demersal Shelf Rockfish: 15% reduction in the maximum permissible ABC of yelloweye rockfish to which the
+           maximum permissible ABC of the Tier 6 species are added
+●   2023
+       ○   EBS Pollock: Author recommended reducing the ABC to the value provided under Tier 3 projections.
+       ○   AI Pacific Cod: PT reduced maximum ABC by 8% based on setting the ABC equal to OFL from Model 23.2. SSC
+           recommended a 10% reduction based on elevated levels in the ecosystem (higher temperatures in AI) and population
+           dynamics (suitability of longline survey to index Pcod, continued decline of stock, no new survey data) categories.
+      ○    BSAI Northern Rock Sole: 2023 was a harvest projection year and the 2022 method to reduce ABC from the
+           maximum ABC was used.
+      ○    BSAI Blackspotted/Rougheye Rockfish: The recommended 2023 ABC for the AI portion of the stock was 467 t, which
+           was the projected 2023 value from the 2021 projection model. This ABC was 87.6% of the maximum 2023 ABC of 533
+           t, and this ratio between recommended ABC and max ABC is also applied for this harvest projection. This represents
+           an overall BSAI reduction of 11% from max.
+      ○    BSAI Sharks: Catch report. 2022 ABC/OFL used.
+      ○    GOA Pollock: Contrasting trends in surveys have returned and the Shelikof abundance estimate was unexpectedly
+           low, outlying areas higher, but not abnormally higher and so not well explained by spatial shifts, could be a mismatch
+                                                                                                          C1 Groundfish Risk Table Update
+                                                                                                                          December 2024
+
+
+
+
+           in spawn timing and survey timing, but covariate values only moderately explain lower catchability and not explain
+           poor fit to the new data point, also significant retrospective pattern, led to increase to level 2. Authors chose not to
+           reduce from maximum ABC given the overall lack of elevated scores. The SSC was concerned about the dramatic
+           increase in ABC that is expected to drop 56% in 2025. They noted the elevated level 2 stock assessment category
+           and that the recent mix of very low and near average recruitments do not indicate that much biomass entering the
+           system. Increase in ABC seems extreme and SSC concerned about discrepancies between model predicted and
+           survey trends. SSC recommended setting 2024 ABC halfway between the 2023 ABC and the recommended 2024
+           ABC.
+      ○    GOA Rougheye/Blackspotted Rockfish: Due to major concerns in the assessment and population dynamics categories
+           of the risk table, a reduction from the maximum permissible ABC of 1,302 t to 1,037 t was recommended for 2024. A
+           “stair step” approach was used by splitting the difference between the 2024 ABC specified last year and the 2024
+           maximum ABC estimated this year. Due to retrospective patterns in the assessment, poor fits to the data overall, and
+           high uncertainty in the scale and trend of the stock, the assessment section of the Risk Table was rated a “Level 2 –
+           Major Concern.” The downward trends in both survey indices warranted an increase to “Level 2 –Major Concern” in
+           the population dynamics section of the Risk Table.
+●   2024
+       ○   BSAI Greenland Turbot: The authors suggest a 10% reduction in ABC from maximum ABC may be warranted given
+           the uncertainty about stock status, the loss of fishery-independent data in areas where the adult population is found,
+           model structural uncertainty, uncertainty about future recruitment, and declining catch with a declining population.
+      ○    BSAI Sharks: Catch report. 2022 ABC/OFL used.
+      ○    GOA Demersal Shelf Rockfish SEO: The authors recommended a 20% reduction in max ABC due to extreme concern
+           in the population dynamics category (rapid change in biomass and lack of ROV survey data) for DSR in SEO along
+           with increased concerns in the assessment (uncertainty in ADFG survey biomass estimates remains a concern) and
+           fishery performance categories (bycatch in commercial fishery has increasing trend from 2014 and 2024 is very high
+           value although down from 2022 and 2023).
+                                                                          C1 Groundfish Risk Table Update
+                                                                                          December 2024
+
+
+
+
+Figures
+
+
+
+
+Figure 1: Summary counts of risk tables for all Alaska groundfish over the years 2018 to present
+based on Table 1. Blue line is the total number of risk tables completed for all stocks. Red line is
+the count of stocks with risk tables that had at least one elevated score (>=2). Yellow line is the
+count of stocks without any elevated scores. Green line is the count of stocks with an author
+recommended reduction from maximum ABC. Purple line is the final count of risk tables with a
+reduction following review from Plan Team and SSC.
+                                                                          C1 Groundfish Risk Table Update
+                                                                                          December 2024
+
+
+
+
+Figure 2: Summary counts of risk tables for the Bering Sea and Aleutian Islands (BSAI)
+groundfish over the years 2018 to present based on Table 1. Blue line is the total number of risk
+tables completed for all stocks. Red line is the count of stocks with risk tables that had at least
+one elevated score (>=2). Yellow line is the count of stocks without any elevated scores. Green
+line is the count of stocks with an author recommended reduction from maximum ABC. Purple
+line is the final count of risk tables with a reduction following review from Plan Team and SSC.
+                                                                        C1 Groundfish Risk Table Update
+                                                                                        December 2024
+
+
+
+
+Figure 3: Summary counts of risk tables for the Gulf of Alaska (GOA) groundfish over the years
+2018 to present based on Table 1. Blue line is the total number of risk tables completed for all
+stocks. Red line is the count of stocks with risk tables that had at least one elevated score
+(>=2). Yellow line is the count of stocks without any elevated scores. Green line is the count of
+stocks with an author recommended reduction from maximum ABC. Purple line is the final count
+of risk tables with a reduction following review from Plan Team and SSC.
+
