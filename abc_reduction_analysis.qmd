@@ -27,9 +27,77 @@ library(brms)
 library(knitr)
 library(patchwork)
 library(plotly)
+library(gt)
 
 theme_set(theme_minimal(base_size = 13))
 options(mc.cores = min(2, parallel::detectCores()))
+
+format_p <- function(x) {
+  if_else(x < 0.001, "<0.001", sprintf("%.3f", x))
+}
+
+lm_coef_table <- function(model) {
+  summary(model)$coefficients |>
+    as.data.frame() |>
+    rownames_to_column("Term") |>
+    as_tibble() |>
+    rename(
+      `Std. error` = `Std. Error`,
+      `t value` = `t value`,
+      `p value` = `Pr(>|t|)`
+    ) |>
+    mutate(`p value` = format_p(`p value`))
+}
+
+lm_fit_table <- function(model) {
+  model_summary <- summary(model)
+  tibble(
+    Statistic = c("N", "Residual SE", "R-squared", "Adjusted R-squared", "F-statistic", "AIC"),
+    Value = c(
+      nobs(model),
+      model_summary$sigma,
+      model_summary$r.squared,
+      model_summary$adj.r.squared,
+      unname(model_summary$fstatistic["value"]),
+      AIC(model)
+    )
+  )
+}
+
+betareg_coef_table <- function(model) {
+  model_summary <- summary(model)
+  mean_coefs <- model_summary$coefficients$mean |>
+    as.data.frame() |>
+    rownames_to_column("Term") |>
+    as_tibble() |>
+    mutate(Component = "Mean")
+  precision_coefs <- model_summary$coefficients$precision |>
+    as.data.frame() |>
+    rownames_to_column("Term") |>
+    as_tibble() |>
+    mutate(Component = "Precision")
+
+  bind_rows(mean_coefs, precision_coefs) |>
+    relocate(Component, Term) |>
+    rename(
+      `Std. error` = `Std. Error`,
+      `z value` = `z value`,
+      `p value` = `Pr(>|z|)`
+    ) |>
+    mutate(`p value` = format_p(`p value`))
+}
+
+betareg_fit_table <- function(model) {
+  tibble(
+    Statistic = c("N", "Log-likelihood", "AIC", "Pseudo R-squared"),
+    Value = c(
+      nobs(model),
+      as.numeric(logLik(model)),
+      AIC(model),
+      model$pseudo.r.squared
+    )
+  )
+}
 ```
 
 ## Summary
@@ -221,6 +289,78 @@ and the current level 3 ("extreme") is treated as approximately equivalent to
 the earlier level 4. Scores of 0 remain non-elevated placeholders in the
 analysis dataset.
 
+The broader risk-table file also helps separate two related questions: how
+often stocks had elevated risk-table scores, and how often those elevated
+scores were associated with an SSC reduction from `maxABC`. @fig-risk-status
+shows that reductions were a subset of the elevated-score cases in the scored
+records, not a separate pattern among stocks without elevated scores. Cases
+with a recorded SSC reduction but no risk-table score in the extracted table
+are shown separately because they cannot be assigned to the elevated or
+non-elevated categories from the extracted score fields alone.
+
+```{r}
+#| label: fig-risk-status
+#| fig-cap: "Annual risk-table status by region, separating stocks without elevated scores, stocks with elevated scores but no SSC reduction, stocks with elevated scores and an SSC reduction, and reductions where no risk-table score was recorded in the extracted score table."
+#| fig-width: 9
+#| fig-height: 6
+
+risk_status <- read_csv(
+  "groundfish_risk_table_scores.csv",
+  show_col_types = FALSE
+) |>
+  mutate(
+    max_score_num = suppressWarnings(as.numeric(max_score)),
+    ssc_red_num = suppressWarnings(as.numeric(ssc_recommended_reduction)),
+    has_table = !is.na(max_score_num),
+    has_reduction = !is.na(ssc_red_num) & ssc_red_num > 0,
+    status = case_when(
+      has_table & max_score_num <= 1 & !has_reduction ~
+        "No elevated score, no reduction",
+      has_table & max_score_num > 1 & !has_reduction ~
+        "Elevated score, no reduction",
+      has_table & max_score_num > 1 & has_reduction ~
+        "Elevated score, reduction",
+      !has_table & has_reduction ~
+        "Reduction, no score recorded",
+      TRUE ~ NA_character_
+    ),
+    status = factor(
+      status,
+      levels = c(
+        "No elevated score, no reduction",
+        "Elevated score, no reduction",
+        "Elevated score, reduction",
+        "Reduction, no score recorded"
+      )
+    )
+  ) |>
+  filter(!is.na(status)) |>
+  count(region, year, status)
+
+ggplot(risk_status, aes(x = year, y = n, fill = status)) +
+  geom_col(width = 0.75) +
+  facet_wrap(~ region, ncol = 1) +
+  scale_x_continuous(breaks = 2018:2024) +
+  scale_fill_manual(
+    values = c(
+      "No elevated score, no reduction" = "grey80",
+      "Elevated score, no reduction" = "#80cdc1",
+      "Elevated score, reduction" = "#018571",
+      "Reduction, no score recorded" = "#dfc27d"
+    )
+  ) +
+  labs(
+    x = NULL,
+    y = "Number of stocks / risk tables",
+    fill = NULL
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "bottom",
+    legend.text = element_text(size = 9)
+  )
+```
+
 ## Modeling historical patterns of ABC reductions below the maximum permissible
 
 Before the risk table was formalized, Thompson ([@Thompson2019ABCReductions]) 
@@ -311,31 +451,19 @@ are not automatic decision rules.
 Further efforts to quantify translating authors' risk scores to merit reductions
 from maximum permissible ABC values are shown in 
 Thompson's Appendix 2.6 in the 2020 EBS Pacific cod assessment
-[@Thompson2020EBSPcod]. There he proposed a direct probability link between the risk
+[@Thompson2020EBSPcod] proposed a direct probability link between the risk
 table and the reduction from maximum permissible ABC. The currency is the
 probability that `maxABC` exceeds the true-but-unknown OFL. The usual
 assessment uncertainty gives a baseline probability, $P_0$, and the risk table
 adds extra probability from concerns that are not already represented in the
 assessment model.
 
-In plain language, $P_0$ is the built-in probability that `maxABC` is already
-too high based only on the assessment's own uncertainty. It answers the
-question: even if the other risk categories look normal, how likely is the
-stock to be overfished because the true OFL is lower than estimated? A lower
-OFL CV implies a tighter estimate and generally a lower baseline risk, while a
-higher CV implies more uncertainty and a higher baseline risk. In Thompson's
-workflow, $P_0$ sets the floor: the risk table can push the total probability
-upward, but it cannot reduce the probability below the assessment's baseline
-uncertainty. Thus, $P_0$ is the baseline chance of being wrong, the risk table
-adds warning flags, and the final $P$ is the total probability used to decide
-whether ABC should be reduced.
-
 For each risk category $j$, Thompson first maps the assigned risk level and an
 within-level fraction, $\Delta_j$, to a conditional probability
-$P_{\mathrm{cond},j}$. With the three-level calculation used here, the
-probability intervals are: level 1 from $P_0$ to 0.5, level 2 from 0.5 to
-0.75, and level 3 from 0.75 to 1.0. The marginal category probabilities are
-then combined as
+$P_{\mathrm{cond},j}$. With four risk levels, the probability intervals are:
+level 1 from $P_0$ to 0.5, level 2 from 0.5 to 2/3, level 3 from 2/3 to 5/6,
+and level 4 from 5/6 to 1.0. The marginal category probabilities are then
+combined as
 
 $$
 P = 1 - (1 - P_0) \prod_j (1 - p_j),
@@ -775,7 +903,7 @@ The correlation structure in @fig-cor informs whether a more aggregated model
 is reasonable and helps interpret coefficient instability in models that
 include all category scores simultaneously.
 
-## Models
+### Models
 
 The frequentist models below provide progressively richer summaries of the
 relationship between risk table scores and SSC reductions. A Bayesian
@@ -784,53 +912,125 @@ observations from the same stock through partial pooling.
 
 We consider four candidate models, ranging from simple to structured.
 
-### Model 1: OLS on total score
-
-A baseline linear model treating the sum of scores as the sole predictor.
-
 ```{r}
-#| label: m1-fit
+#| label: model-fits
+#| include: false
 
 m1 <- lm(pct_red ~ total_score, data = dat)
-summary(m1)
-```
-
-### Model 2: OLS with individual category scores
-
-Allows each risk dimension to carry different weight.
-
-```{r}
-#| label: m2-fit
-
 m2 <- lm(pct_red ~ A + P + E + F, data = dat)
-summary(m2)
-```
-
-### Model 3: Beta regression on individual scores
-
-Beta regression is the natural choice for a bounded proportional response.
-We model the logit of the proportional reduction.
-
-```{r}
-#| label: m3-fit
-
 m3 <- betareg(pct_red_prop ~ A + P + E + F, data = dat)
-summary(m3)
+m4 <- betareg(pct_red_prop ~ total_score + n_elevated, data = dat)
 ```
 
-### Model 4: Beta regression with total score + number elevated
+#### Model 1: OLS on total score
 
-A parsimonious alternative that separates severity (total score) from
-breadth (how many categories are flagged).
+A baseline linear model treating the sum of scores as the sole predictor is provided in
+Model 1. It shows the simplest aggregate relationship with the estimated total-score
+slope `r round(coef(m1)["total_score"], 2)` percentage points per score
+unit, with adjusted $R^2$ = `r round(summary(m1)$adj.r.squared, 2)`. This is
+useful as a baseline, but the fit indicates that total score alone explains
+only a limited share of the observed variation in SSC reductions.
 
 ```{r}
-#| label: m4-fit
+#| label: tbl-m1-summary
+#| tbl-cap: "Model 1 coefficient summary: OLS reduction model using total risk score."
 
-m4 <- betareg(pct_red_prop ~ total_score + n_elevated, data = dat)
-summary(m4)
+lm_coef_table(m1) |>
+  gt() |>
+  fmt_number(columns = c(Estimate, `Std. error`, `t value`), decimals = 2) |>
+  tab_source_note(
+    source_note = md(paste0(
+      "Model fit: N = ", nobs(m1),
+      "; adjusted R^2 = ", round(summary(m1)$adj.r.squared, 2),
+      "; AIC = ", round(AIC(m1), 1), "."
+    ))
+  )
 ```
 
-### Sensitivity: harmonized score scale
+
+#### Model 2: OLS with individual category scores
+
+Model 2 allows each risk dimension to carry different weight by separating the
+risk table into its four components. The population
+dynamics coefficient is `r round(coef(m2)["P"], 2)`, compared with
+`r round(coef(m2)["A"], 2)` for assessment, `r round(coef(m2)["E"], 2)` for
+ecosystem, and `r round(coef(m2)["F"], 2)` for fishery-informed concerns.
+This model is more interpretable than Model 1 because it allows different
+types of risk to have different associations with reductions, but the small
+sample means the coefficient uncertainty remains important.
+
+```{r}
+#| label: tbl-m2-summary
+#| tbl-cap: "Model 2 coefficient summary: OLS reduction model using individual risk-category scores."
+
+lm_coef_table(m2) |>
+  gt() |>
+  fmt_number(columns = c(Estimate, `Std. error`, `t value`), decimals = 2) |>
+  tab_source_note(
+    source_note = md(paste0(
+      "Model fit: N = ", nobs(m2),
+      "; adjusted R^2 = ", round(summary(m2)$adj.r.squared, 2),
+      "; AIC = ", round(AIC(m2), 1), "."
+    ))
+  )
+```
+
+#### Model 3: Beta regression on individual scores
+
+Beta regression is the natural choice for a bounded proportional response, and
+Model 3 keeps the category-level structure while respecting that proportional
+reductions are bounded between zero and one. Coefficients are on the logit
+scale, so positive values indicate higher expected proportional reductions
+after accounting for the other categories. The pseudo $R^2$ is
+`r round(m3$pseudo.r.squared, 2)`, which makes this a useful descriptive model
+for direction and relative strength rather than a precise prediction rule.
+
+```{r}
+#| label: tbl-m3-summary
+#| tbl-cap: "Model 3 coefficient summary: beta regression using individual risk-category scores."
+
+betareg_coef_table(m3) |>
+  gt(groupname_col = "Component") |>
+  fmt_number(columns = c(Estimate, `Std. error`, `z value`), decimals = 2) |>
+  tab_source_note(
+    source_note = md(paste0(
+      "Model fit: N = ", nobs(m3),
+      "; pseudo R^2 = ", round(m3$pseudo.r.squared, 2),
+      "; AIC = ", round(AIC(m3), 1), "."
+    ))
+  )
+```
+
+#### Model 4: Beta regression with total score + number elevated
+
+Model 4 is a parsimonious alternative that separates severity, measured as the
+total score, from breadth, measured as how many categories are flagged. It asks
+whether the overall severity of the scores and the number of
+flagged categories carry distinct information. The total-score coefficient is
+`r round(m4$coefficients$mean["total_score"], 2)` on the logit scale, while
+the number-elevated coefficient is
+`r round(m4$coefficients$mean["n_elevated"], 2)`.
+This provides a compact alternative to the category-level model, but it also
+collapses information about which specific risk dimension is driving the
+concern.
+
+```{r}
+#| label: tbl-m4-summary
+#| tbl-cap: "Model 4 coefficient summary: beta regression using total score and number of elevated categories."
+
+betareg_coef_table(m4) |>
+  gt(groupname_col = "Component") |>
+  fmt_number(columns = c(Estimate, `Std. error`, `z value`), decimals = 2) |>
+  tab_source_note(
+    source_note = md(paste0(
+      "Model fit: N = ", nobs(m4),
+      "; pseudo R^2 = ", round(m4$pseudo.r.squared, 2),
+      "; AIC = ", round(AIC(m4), 1), "."
+    ))
+  )
+```
+
+#### Sensitivity: harmonized score scale
 
 The main regression models above use the scores as recorded in the historical
 risk table summary. Because the scoring scale changed in 2023, the sensitivity
@@ -839,6 +1039,14 @@ fitting the same broad model forms. Specifically, current level 2 is treated
 as old level 3 and current level 3 is treated as old level 4. This adjustment
 does not change whether a category is elevated, but it does change the
 severity assigned to recent elevated scores.
+
+The harmonized fits should be read as a sensitivity analysis rather than a
+replacement for the raw-score models. They ask whether the main conclusions
+are sensitive to treating the 2023+ three-level scores as compressed versions
+of the earlier four-level scores. If the raw and harmonized rows give similar
+AIC and pseudo-$R^2$ values, the broad conclusions are not being driven mainly
+by the post-2023 scale change; larger differences would indicate that the score
+compression matters for the fitted relationship.
 
 ```{r}
 #| label: tbl-harmonized-sensitivity
@@ -878,19 +1086,20 @@ harmonized_compare <- tribble(
 
 harmonized_compare |>
   mutate(across(c(AIC, R2), ~ round(.x, 2))) |>
-  kable(
-    col.names = c(
-      "Model", "Score scale", "Description", "AIC", "R² / pseudo-R²"
-    )
+  rename(
+    Model = model,
+    `Score scale` = score_scale,
+    Description = description,
+    `R² / pseudo-R²` = R2
+  ) |>
+  gt() |>
+  fmt_number(columns = c(AIC, `R² / pseudo-R²`), decimals = 2) |>
+  tab_source_note(
+    source_note = "Harmonized models remap 2023+ increased and extreme scores to the earlier four-level scale before fitting."
   )
 ```
 
-The harmonized fits should be read as a sensitivity analysis rather than a
-replacement for the raw-score models. They ask whether the main conclusions
-are sensitive to treating the 2023+ three-level scores as compressed versions
-of the earlier four-level scores.
-
-### Model 5: Bayesian beta mixed-effects model
+#### Model 5: Bayesian beta mixed-effects model
 
 The previous models treat stock-year observations as conditionally independent.
 That is a strong assumption because repeated entries for the same stock may
@@ -958,6 +1167,15 @@ stock-level variance term. These estimates are easiest to interpret directionall
 positive values indicate larger expected reductions on the logit scale, after
 accounting for the other scores and stock-to-stock heterogeneity.
 
+Because the Bayesian model includes stock-level partial pooling, it is not
+strictly comparable to the AIC table below on the same scale. Instead, it is
+best read as a complementary model that asks whether the main category effects
+remain after allowing each stock to have its own baseline tendency toward
+higher or lower reductions. The stock-level standard deviation summarizes how
+much repeated observations differ among stocks after accounting for the four
+score categories; the wide posterior intervals on category effects are a useful
+reminder that this dataset is small for a hierarchical model.
+
 ```{r}
 #| label: tbl-brms-fixed
 #| tbl-cap: "Posterior summaries for the Bayesian beta mixed-effects model."
@@ -994,21 +1212,30 @@ m5_post <- posterior_summary(
   ) |>
   mutate(across(where(is.numeric), ~ round(.x, 2)))
 
-kable(m5_post)
+m5_post |>
+  gt() |>
+  fmt_number(
+    columns = c(Estimate, `Est. Error`, `2.5%`, `97.5%`),
+    decimals = 2
+  ) |>
+  tab_source_note(
+    source_note = "Intervals are central 95% posterior intervals."
+  )
 ```
 
-Because the Bayesian model includes stock-level partial pooling, it is not
-strictly comparable to the AIC table below on the same scale. Instead, it is
-best read as a complementary model that asks whether the main category effects
-remain after allowing each stock to have its own baseline tendency toward
-higher or lower reductions.
-
-### Model comparison
+#### Model comparison
 
 @tbl-compare brings the four candidate models onto a common footing. The
 motivation is pragmatic: rather than argue for a model based only on
 interpretability, it compares fit statistics to show whether added structure is
 buying meaningful explanatory value.
+
+Read @tbl-compare as a compact summary of the tradeoff between parsimony and
+flexibility. It indicates whether it is more useful to model the four
+categories separately or to collapse them into broader summaries like total
+score and number elevated. Lower AIC values indicate better relative support
+among the frequentist candidates, while the $R^2$/pseudo-$R^2$ column gives a
+rough sense of descriptive fit on each model's native scale.
 
 ```{r}
 #| label: tbl-compare
@@ -1028,15 +1255,16 @@ compare <- tribble(
 
 compare |>
   mutate(across(c(AIC, R2), ~ round(.x, 2))) |>
-  kable(col.names = c("Model", "Description", "AIC", "R² / pseudo-R²"))
+  rename(
+    Model = model,
+    Description = description,
+    `R² / pseudo-R²` = R2
+  ) |>
+  gt() |>
+  fmt_number(columns = c(AIC, `R² / pseudo-R²`), decimals = 2)
 ```
 
-Read @tbl-compare as a compact summary of the tradeoff between parsimony and
-flexibility. It indicates whether it is more useful to model the four
-categories separately or to collapse them into broader summaries like total
-score and number elevated.
-
-### Observed vs. fitted
+#### Observed vs. fitted
 
 @fig-obs-fit provides the most direct visual model check in the report.
 Its purpose is to show how closely each candidate model reproduces the observed
@@ -1079,7 +1307,7 @@ Because the 1:1 line is drawn explicitly in @fig-obs-fit, departures from that
 line make it easier to identify which observations are structurally hard to
 explain regardless of model choice.
 
-### Coefficient effects (beta regression)
+#### Coefficient effects (beta regression)
 
 @fig-coefs translates the preferred category-based beta regression into
 an interpretable effect display. The main motivation is to show direction,
@@ -1108,8 +1336,6 @@ ggplot(coef_tbl, aes(x = estimate, y = reorder(term, estimate))) +
 In that sense, @fig-coefs is the clearest summary of which risk dimensions are
 most strongly associated with larger reductions once the overlapping signal
 among categories is taken into account.
-
-## Residual diagnostics
 
 @fig-resid addresses model adequacy rather than fishery interpretation.
 The intent is to check whether the beta regression leaves obvious structure in
