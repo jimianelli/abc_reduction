@@ -1,5 +1,5 @@
 ---
-title: "Modeling SSC Reductions from maxABC Using Risk Table Scores"
+title: "Evaluating and Refining Groundfish Risk Tables for ABC Reductions Under Exceptional Circumstances"
 author: ""
 date: today
 bibliography: Thompson_link_ABC_reduction.bib
@@ -162,8 +162,6 @@ This document narrows that broader report into a modeling exercise. It focuses
 on the relationship between risk table scores and the magnitude of the SSC's
 recommended reduction from maxABC, and evaluates several candidate models for
 describing those reductions.
-
-## Background
 
 ### How the risk table framework evolved
 
@@ -500,7 +498,7 @@ three-level structure but switches the number of categories by year.
 ```{r}
 #| label: fig-thompson-heatmap
 #| fig-cap: "Illustrative adjustment under Thompson's probability link, summarized by the number of elevated categories and the common three-level risk score assigned to those categories. Delta is fixed at 0.5, OFL is normalized to 1, and panels vary the OFL CV. ABC equals the adjustment multiplied by maxABC."
-#| fig-width: 10
+#| fig-width: 8.5
 #| fig-height: 5
 
 thompson_p0 <- 0.49
@@ -1373,6 +1371,18 @@ misspecified.
 
 ## Discussion
 
+The analyses above evaluate risk tables as they have been used to date: a
+structured but still partly discretionary way to document concern and justify
+ABC reductions below `maxABC`. That perspective is useful, but it should be
+read alongside ongoing Council work on harvest control rules (HCRs). The
+Council's 2026 HCR discussion paper frames alternative HCRs as one pathway for
+making harvest specifications more climate-resilient and more explicit about
+how risk and uncertainty enter ABC advice [@StramEtAl2026HCR]. In that
+broader setting, the question is not only how risk-table scores have mapped to
+past reductions, but also which concerns should remain exceptional,
+case-specific judgments and which could be incorporated into pre-specified
+control rules.
+
 Several patterns emerge:
 
 1. **Population dynamics (P) scores are the strongest individual predictor**
@@ -1403,7 +1413,44 @@ Several patterns emerge:
    Any predictive model should be understood as describing central tendency
    rather than prescribing outcomes.
 
-## Report context and interpretation
+The HCR discussion paper is directly relevant to interpreting that last point.
+It notes that the current groundfish `maxABC` HCR produces an upper bound on
+ABC from tier-specific formulas, but does not itself incorporate qualitative
+information about stock health, ecosystem conditions, or socioeconomic factors
+[@StramEtAl2026HCR]. Risk tables have therefore served as a practical annual
+mechanism for documenting uncertainty outside the assessment model and
+supporting reductions below `maxABC`. Candidate HCRs under development would
+move some of that work into the control rule itself. Examples include HCRs
+that lower fishing mortality at high stock sizes to build biomass reserves and
+buffer against environmental shocks, and dynamic HCRs that adjust reference
+points or harvest rates in response to estimated changes in stock productivity
+or environmental covariates [@StramEtAl2026HCR].
+
+If those HCRs are adopted for appropriate stocks, they could lessen the need
+to express recurring or predictable concerns as elevated risk-table scores.
+For example, if a dynamic HCR already reduces harvest rates when productivity
+declines, then a population-dynamics concern that previously would have
+triggered an elevated score and an ad hoc ABC reduction may instead be handled
+routinely through the HCR. Similarly, an HCR designed to preserve additional
+spawning biomass or age structure during high-biomass periods could reduce the
+need to use risk tables as the main vehicle for precaution when recruitment,
+growth, or environmental conditions are changing. In that future role, risk
+tables would remain important, but their strongest use would be to identify
+conditions outside the domain that the ordinary HCR was designed and tested to
+handle.
+
+That distinction aligns with the HCR paper's treatment of exceptional
+circumstances. A complete management procedure can define what the ordinary
+HCR is expected to handle routinely and what unusual conditions justify
+stepping outside the standard rule, such as survey failure, abrupt changes in
+productivity or distribution, marine heatwaves, assessment assumptions no
+longer being adequate, or new information showing that the management
+procedure is operating outside its tested domain [@StramEtAl2026HCR]. This
+suggests a useful refinement for risk tables: elevated scores should not be a
+substitute for an HCR that can be specified analytically, but they are well
+suited to diagnosing exceptional circumstances, documenting evidence that the
+HCR may be outside its tested range, and triggering additional review or a
+pre-agreed contingency action.
 
 The broader 2024 update emphasized that reductions from maximum permissible
 ABC have occurred for a limited set of stocks over the lifetime of the risk
@@ -1425,3 +1472,5 @@ benchmarks. They help summarize what kinds of score combinations have
 historically coincided with larger reductions, but they should not be treated
 as a mechanical rule for future assessments operating under a still-evolving
 risk table framework.
+
+# References
