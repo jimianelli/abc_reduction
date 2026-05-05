@@ -233,7 +233,89 @@ The final buffer follows from the ratio $OFL / maxABC_{PE}$. If
 $maxABC_{PE}$ is greater than OFL, ABC is reduced by that ratio; otherwise ABC
 remains at `maxABC`.
 
-The table below revisits the values Thompson applied conceptually. The
+@fig-thompson-heatmap gives a first illustration of the mechanism by reducing
+the four-category risk table to two simple dimensions: the number of elevated
+categories and the common level assigned to those elevated categories. The
+panels show how the retained fraction of maximum permissible ABC changes as
+the within-level fraction, $\Delta$, moves from the lower to upper part of each
+risk interval.
+
+```{r}
+#| label: fig-thompson-heatmap
+#| fig-cap: "Illustrative ABC retained under Thompson's probability link, summarized by the number of elevated categories and the common risk level assigned to those categories. OFL is normalized to 1 and CV is set to 0.30."
+#| fig-width: 8
+#| fig-height: 5.5
+
+thompson_p0 <- 0.49
+thompson_nlev <- 4
+thompson_ncat <- 4
+thompson_cv <- 0.30
+thompson_sigma <- sqrt(log1p(thompson_cv^2))
+
+thompson_bounds <- tibble(level = 1:thompson_nlev) |>
+  mutate(
+    p_upper = (level + thompson_nlev - 2) / (2 * (thompson_nlev - 1)),
+    p_lower = if_else(level == 1, thompson_p0, lag(p_upper))
+  )
+
+level_to_p_cond <- function(level, delta = 0.5) {
+  bounds <- thompson_bounds |>
+    filter(.data$level == .env$level)
+  bounds$p_lower + delta * (bounds$p_upper - bounds$p_lower)
+}
+
+p_cond_to_marginal <- function(p_cond) {
+  1 - ((1 - p_cond) / (1 - thompson_p0))^(1 / thompson_ncat)
+}
+
+joint_p <- function(pj) {
+  1 - (1 - thompson_p0) * prod(1 - pj)
+}
+
+abc_retained <- function(p) {
+  maxABC_pe_to_OFL <- qlnorm(
+    p,
+    meanlog = 0,
+    sdlog = thompson_sigma
+  )
+  pmin(1, 1 / maxABC_pe_to_OFL)
+}
+
+thompson_heatmap <- crossing(
+  n_high = 0:thompson_ncat,
+  high_level = 1:thompson_nlev,
+  delta = c(0.25, 0.50, 0.75)
+) |>
+  rowwise() |>
+  mutate(
+    levels = list(c(rep(high_level, n_high),
+                    rep(1, thompson_ncat - n_high))),
+    p_cond = list(map_dbl(levels, level_to_p_cond, delta = delta)),
+    pj = list(map_dbl(p_cond, p_cond_to_marginal)),
+    thompson_joint_p = joint_p(pj),
+    ABC_over_maxABC = abc_retained(thompson_joint_p)
+  ) |>
+  ungroup()
+
+ggplot(thompson_heatmap,
+       aes(x = n_high, y = high_level, fill = ABC_over_maxABC)) +
+  geom_tile(color = "white") +
+  geom_text(aes(label = round(ABC_over_maxABC, 2)), size = 3) +
+  facet_wrap(~ delta, labeller = label_both) +
+  scale_fill_viridis_c(
+    limits = c(0, 1),
+    name = "ABC / maxABC"
+  ) +
+  scale_x_continuous(breaks = 0:thompson_ncat) +
+  scale_y_continuous(breaks = 1:thompson_nlev) +
+  labs(
+    x = "Number of elevated-risk categories",
+    y = "Risk level of elevated categories"
+  ) +
+  theme_minimal(base_size = 12)
+```
+
+The first table below revisits the values Thompson applied conceptually. The
 absolute value of $maxABC_{PE}$ depends on the OFL uncertainty distribution in
 the assessment. For comparability, @tbl-thompson-levels normalizes OFL to 1,
 uses a lognormal uncertainty distribution, sets $P_0 = 0.49$, and uses a CV of
@@ -245,16 +327,8 @@ uncertainty is available.
 #| label: tbl-thompson-levels
 #| tbl-cap: "Thompson risk-level probability intervals and probability-equivalent maxABC values under an illustrative lognormal OFL distribution."
 
-thompson_p0 <- 0.49
-thompson_nlev <- 4
-thompson_ncat <- 4
-thompson_cv <- 0.30
-thompson_sigma <- sqrt(log1p(thompson_cv^2))
-
-thompson_bounds <- tibble(level = 1:thompson_nlev) |>
+thompson_bounds_midpoint <- thompson_bounds |>
   mutate(
-    p_upper = (level + thompson_nlev - 2) / (2 * (thompson_nlev - 1)),
-    p_lower = if_else(level == 1, thompson_p0, lag(p_upper)),
     delta_midpoint = 0.5,
     p_cond_midpoint = p_lower + delta_midpoint * (p_upper - p_lower),
     maxABC_pe_to_OFL = qlnorm(
@@ -264,7 +338,7 @@ thompson_bounds <- tibble(level = 1:thompson_nlev) |>
     )
   )
 
-thompson_bounds |>
+thompson_bounds_midpoint |>
   transmute(
     `Risk level` = level,
     `P lower` = round(p_lower, 3),
@@ -286,16 +360,6 @@ summary table. It is a transparent benchmark showing the probability-equivalent
 ```{r}
 #| label: tbl-thompson-applied
 #| tbl-cap: "Illustrative application of Thompson's probability mapping to observed score combinations. OFL is normalized to 1 and CV is set to 0.30."
-
-level_to_p_cond <- function(level, delta = 0.5) {
-  bounds <- thompson_bounds |>
-    filter(.data$level == .env$level)
-  bounds$p_lower + delta * (bounds$p_upper - bounds$p_lower)
-}
-
-p_cond_to_marginal <- function(p_cond) {
-  1 - ((1 - p_cond) / (1 - thompson_p0))^(1 / thompson_ncat)
-}
 
 score_to_level <- function(score) {
   pmin(pmax(if_else(score == 0, 1, score), 1), thompson_nlev)
