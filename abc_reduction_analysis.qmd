@@ -26,6 +26,7 @@ library(betareg)
 library(brms)
 library(knitr)
 library(patchwork)
+library(plotly)
 
 theme_set(theme_minimal(base_size = 13))
 options(mc.cores = min(2, parallel::detectCores()))
@@ -222,11 +223,12 @@ analysis dataset.
 
 ## Modeling historical patterns of ABC reductions below the maximum permissible
 
-Before the risk table was formalized, Thompson prepared a working paper for
-the SSC that asked a related question: could historical BSAI and GOA
+Before the risk table was formalized, Thompson ([@Thompson2019ABCReductions]) 
+conducted an analysis for
+the NPFMC that asked a related question: could historical BSAI and GOA
 Groundfish Plan Team recommendations to set ABC below the maximum permissible
 level be reverse-engineered into transparent decision rules?
-[@Thompson2019ABCReductions]. The analysis covered 2003-2017 and identified
+He covered 2003-2017 and identified
 76 instances in which the Plan Teams recommended ABC below `maxABC`, or about
 five instances per year.
 
@@ -306,20 +308,34 @@ are not automatic decision rules.
 
 ## Thompson's link between risk and ABC reductions
 
+Further efforts to quantify translating authors' risk scores to merit reductions
+from maximum permissible ABC values are shown in 
 Thompson's Appendix 2.6 in the 2020 EBS Pacific cod assessment
-[@Thompson2020EBSPcod] proposed a direct probability link between the risk
+[@Thompson2020EBSPcod]. There he proposed a direct probability link between the risk
 table and the reduction from maximum permissible ABC. The currency is the
 probability that `maxABC` exceeds the true-but-unknown OFL. The usual
 assessment uncertainty gives a baseline probability, $P_0$, and the risk table
 adds extra probability from concerns that are not already represented in the
 assessment model.
 
+In plain language, $P_0$ is the built-in probability that `maxABC` is already
+too high based only on the assessment's own uncertainty. It answers the
+question: even if the other risk categories look normal, how likely is the
+stock to be overfished because the true OFL is lower than estimated? A lower
+OFL CV implies a tighter estimate and generally a lower baseline risk, while a
+higher CV implies more uncertainty and a higher baseline risk. In Thompson's
+workflow, $P_0$ sets the floor: the risk table can push the total probability
+upward, but it cannot reduce the probability below the assessment's baseline
+uncertainty. Thus, $P_0$ is the baseline chance of being wrong, the risk table
+adds warning flags, and the final $P$ is the total probability used to decide
+whether ABC should be reduced.
+
 For each risk category $j$, Thompson first maps the assigned risk level and an
 within-level fraction, $\Delta_j$, to a conditional probability
-$P_{\mathrm{cond},j}$. With four risk levels, the probability intervals are:
-level 1 from $P_0$ to 0.5, level 2 from 0.5 to 2/3, level 3 from 2/3 to 5/6,
-and level 4 from 5/6 to 1.0. The marginal category probabilities are then
-combined as
+$P_{\mathrm{cond},j}$. With the three-level calculation used here, the
+probability intervals are: level 1 from $P_0$ to 0.5, level 2 from 0.5 to
+0.75, and level 3 from 0.75 to 1.0. The marginal category probabilities are
+then combined as
 
 $$
 P = 1 - (1 - P_0) \prod_j (1 - p_j),
@@ -348,16 +364,16 @@ the four-category risk table to two simple dimensions: the number of elevated
 categories and the common three-level risk score assigned to those elevated
 categories. The
 panels show how the retained fraction of maximum permissible ABC changes as
-the within-level fraction, $\Delta$, moves from the lower to upper part of each
-risk interval. This illustration uses the four-category, three-level structure
-used from 2023 onward; the applied table below uses the same three-level
-structure but switches the number of categories by year.
+OFL uncertainty changes, with the within-level fraction fixed at
+$\Delta = 0.5$. This illustration uses the four-category, three-level
+structure used from 2023 onward; the applied table below uses the same
+three-level structure but switches the number of categories by year.
 
 ```{r}
 #| label: fig-thompson-heatmap
-#| fig-cap: "Illustrative ABC retained under Thompson's probability link, summarized by the number of elevated categories and the common three-level risk score assigned to those categories. OFL is normalized to 1 and CV is set to 0.30."
-#| fig-width: 8
-#| fig-height: 5.5
+#| fig-cap: "Illustrative adjustment under Thompson's probability link, summarized by the number of elevated categories and the common three-level risk score assigned to those categories. Delta is fixed at 0.5, OFL is normalized to 1, and panels vary the OFL CV. ABC equals the adjustment multiplied by maxABC."
+#| fig-width: 10
+#| fig-height: 5
 
 thompson_p0 <- 0.49
 thompson_nlev <- 3
@@ -389,11 +405,11 @@ joint_p <- function(pj) {
   1 - (1 - thompson_p0) * prod(1 - pj)
 }
 
-abc_retained <- function(p) {
+abc_retained <- function(p, cv = thompson_cv) {
   maxABC_pe_to_OFL <- qlnorm(
     p,
     meanlog = 0,
-    sdlog = thompson_sigma
+    sdlog = sqrt(log1p(cv^2))
   )
   pmin(1, 1 / maxABC_pe_to_OFL)
 }
@@ -401,7 +417,8 @@ abc_retained <- function(p) {
 thompson_heatmap <- crossing(
   n_high = 0:thompson_ncat,
   high_level = 1:thompson_nlev,
-  delta = c(0.25, 0.50, 0.75)
+  delta = 0.5,
+  cv = c(0.10, 0.30, 0.50)
 ) |>
   rowwise() |>
   mutate(
@@ -410,18 +427,20 @@ thompson_heatmap <- crossing(
     p_cond = list(map_dbl(levels, level_to_p_cond, delta = delta)),
     pj = list(map_dbl(p_cond, p_cond_to_marginal)),
     thompson_joint_p = joint_p(pj),
-    ABC_over_maxABC = abc_retained(thompson_joint_p)
+    ABC_over_maxABC = abc_retained(thompson_joint_p, cv = cv)
   ) |>
-  ungroup()
+  ungroup() |>
+  mutate(cv = factor(cv, levels = c(0.10, 0.30, 0.50),
+                     labels = c("CV = 0.10", "CV = 0.30", "CV = 0.50")))
 
 ggplot(thompson_heatmap,
        aes(x = n_high, y = high_level, fill = ABC_over_maxABC)) +
   geom_tile(color = "white") +
   geom_text(aes(label = round(ABC_over_maxABC, 2)), size = 3) +
-  facet_wrap(~ delta, labeller = label_both) +
+  facet_wrap(~ cv) +
   scale_fill_viridis_c(
-    limits = c(0, 1),
-    name = "ABC / maxABC"
+    limits = c(0.5, 1),
+    name = "Adjustment"
   ) +
   scale_x_continuous(breaks = 0:thompson_ncat) +
   scale_y_continuous(breaks = 1:thompson_nlev) +
@@ -497,7 +516,8 @@ score_to_level <- function(score, nlev) {
   pmin(pmax(if_else(score == 0, 1, score), 1), nlev)
 }
 
-row_thompson <- function(A, P, E, F, year, delta = 0.5) {
+row_thompson <- function(A, P, E, F, year, delta = 0.5,
+                         cv = thompson_cv) {
   settings <- year_settings(year)
   scores <- if (settings$ncat == 3L) {
     c(A, P, E)
@@ -512,7 +532,7 @@ row_thompson <- function(A, P, E, F, year, delta = 0.5) {
   maxABC_pe_to_OFL <- qlnorm(
     p,
     meanlog = 0,
-    sdlog = thompson_sigma
+    sdlog = sqrt(log1p(cv^2))
   )
   tibble(
     ncat = settings$ncat,
@@ -551,34 +571,47 @@ thompson_applied |>
 ```
 
 @fig-thompson-observed compares the observed SSC reductions with
-three-level Thompson reductions across three high within-level values of
-$\Delta$: 0.90, 0.95, and 0.99. Points
+three-level Thompson reductions across three OFL uncertainty values:
+CV = 0.10, 0.30, and 0.50. The within-level fraction is fixed at
+$\Delta = 0.9$, matching @tbl-thompson-applied. Points
 above the 1:1 line indicate cases where the illustrative Thompson calculation
 would imply a larger reduction than the observed SSC reduction; points below
 the line indicate cases where it would imply a smaller reduction.
 
 ```{r}
 #| label: fig-thompson-observed
-#| fig-cap: "Observed SSC reduction compared with the illustrative three-level Thompson reduction. Colors show years and shapes show within-level delta."
+#| fig-cap: "Observed SSC reduction compared with the illustrative three-level Thompson reduction. Colors show years and shapes show OFL CV, with delta fixed at 0.9."
 #| fig-width: 8
 #| fig-height: 6
 
-thompson_delta_grid <- dat |>
-  crossing(delta = c(0.90, 0.95, 0.99)) |>
+thompson_cv_grid <- dat |>
+  crossing(
+    delta = thompson_applied_delta,
+    cv = c(0.10, 0.30, 0.50)
+  ) |>
   mutate(thompson = pmap(
-    list(A, P, E, F, year, delta),
+    list(A, P, E, F, year, delta, cv),
     row_thompson
   )) |>
   unnest(thompson) |>
-  mutate(delta = factor(delta))
+  mutate(cv = factor(cv, levels = c(0.10, 0.30, 0.50),
+                     labels = c("CV = 0.10", "CV = 0.30", "CV = 0.50")),
+         hover = paste0(
+           "Stock: ", stock,
+           "<br>Year: ", year,
+           "<br>OFL CV: ", cv,
+           "<br>Observed SSC reduction: ", round(pct_red, 1), "%",
+           "<br>Thompson reduction: ", round(thompson_pct_reduction, 1), "%"
+         ))
 
-ggplot(
-  thompson_delta_grid,
+p_thompson_observed <- ggplot(
+  thompson_cv_grid,
   aes(
     x = pct_red,
     y = thompson_pct_reduction,
     color = factor(year),
-    shape = delta
+    shape = cv,
+    text = hover
   )
 ) +
   geom_abline(slope = 1, intercept = 0,
@@ -589,11 +622,12 @@ ggplot(
     x = "Observed SSC reduction from maxABC (%)",
     y = "Thompson reduction from maxABC (%)",
     color = "Year",
-    shape = "Delta"
+    shape = "OFL CV"
   ) +
-  coord_equal(xlim = c(0, 100), ylim = c(0, 100)) +
-  theme(legend.position = "right",
-        legend.text = element_text(size = 8))
+  coord_equal(xlim = c(0, 75), ylim = c(0, 75)) +
+  theme(legend.position = "none")
+
+ggplotly(p_thompson_observed, tooltip = "text")
 ```
 
 In plain language, Thompson's method turns the risk table into a probability
@@ -616,7 +650,7 @@ moderate risks are a yellow light for a smaller cut; many high risks are a red
 light for a larger cut. In one line, more risk means a higher chance of
 overfishing, which means a lower allowed catch.
 
-## Exploratory Figures
+## Exploratory analyses
 
 The exploratory displays in @fig-scatter-total, @fig-scatter-nelev,
 @fig-facet-categories, and @fig-cor are intended to answer a simple question
