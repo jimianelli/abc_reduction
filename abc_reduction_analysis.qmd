@@ -59,35 +59,35 @@ scores four categories—Assessment-related (A), Population dynamics (P),
 Ecosystem (E), and Fishery-informed (F)—on a scale where scores >1 indicate
 concern.
 
-This analysis sits within the broader context of the *Groundfish Risk Table
-Report: 2024 Update*, which collated risk table information for Alaska
-groundfish stocks in the Bering Sea and Aleutian Islands (BSAI) and the Gulf
-of Alaska (GOA) from 2018 onward. Risk table implementation changed
-substantially over that period. The 2018 trial year included only a small
-number of completed tables and only three categories. Fishery performance was
-added in 2019, and in response to SSC direction the scoring system was reduced
-from four levels to three beginning in 2023. Category descriptions were then
-revised again for 2024 to better align with the intent of the original table.
+This analysis uses the *Groundfish Risk Table Report: 2024 Update*, presented
+under agenda item C1 at the December 2024 Council meeting, as its source
+document for the historical risk-table record [@ShotwellBryan2024RiskTable].
+That report collated risk table information for Alaska groundfish stocks in
+the Bering Sea and Aleutian Islands (BSAI) and the Gulf of Alaska (GOA) from
+2018 onward and framed the summary as a living reference for stock assessment
+authors and reviewers.
+
+The report emphasizes that risk table implementation changed substantially
+over the 2018-2024 period [@ShotwellBryan2024RiskTable]. The 2018 trial year
+included only a small number of completed tables and only three categories:
+assessment, population dynamics, and ecosystem. Fishery performance was added
+in 2019. In response to SSC direction, the scoring system was later reduced
+from four levels to three beginning in 2023, and the category descriptions
+were revised again for 2024 to better cover the intended range of conditions.
 Those shifts make direct comparisons across years imperfect, especially when
 contrasting the 2018 trial year and the reduced-level years from 2023 onward
 with the 2019-2022 period.
 
-An AFSC working group convened in early 2024 to review all groundfish risk
-table scores to date and consolidate them into a single living reference.
-That effort documented annual category scores, the maximum score across
-categories, author-proposed reductions, SSC-recommended reductions, the
-methods used to derive those reductions, and cases where the author, Plan
-Team, and SSC differed. The working group used that summary both to support
-stock assessment authors and to identify common patterns in how risk tables
-have been translated into ABC reductions over time.
-
-Across 2018-2024, a total of 136 risk tables were developed. Of those, 77 had
-at least one elevated score, 59 had no elevated scores, 25 included an author
-recommendation to reduce from maximum ABC, and 28 resulted in a final
-reduction following Plan Team and SSC review. Even with that history, the
-overall number of reductions remains small relative to the number of risk
-tables produced, which reinforces that risk table scores are informative but
-not determinative on their own.
+The AFSC working group summarized annual category scores, the maximum score
+across categories, author-proposed reductions, SSC-recommended reductions,
+methods used to derive reductions, and cases where author, Plan Team, and SSC
+recommendations differed [@ShotwellBryan2024RiskTable]. Across 2018-2024, the
+report identified 136 completed risk tables: 77 with at least one elevated
+score, 59 without elevated scores, 25 with an author recommendation to reduce
+from maximum ABC, and 28 with a final reduction following Plan Team and SSC
+review. The relatively small number of reductions compared with the number of
+risk tables is central to the interpretation here: risk table scores are
+informative, but they are not determinative on their own.
 
 This document narrows that broader report into a modeling exercise. It focuses
 on the relationship between risk table scores and the magnitude of the SSC's
@@ -191,7 +191,20 @@ dat <- dat |>
   mutate(
     total_score  = A + P + E + F,
     n_elevated   = (A > 0) + (P > 0) + (E > 0) + (F > 0),
-    pct_red_prop = pct_red / 100
+    pct_red_prop = pct_red / 100,
+    across(
+      c(A, P, E, F),
+      ~ case_when(
+        year >= 2023 & .x == 2 ~ 3,
+        year >= 2023 & .x == 3 ~ 4,
+        TRUE ~ .x
+      ),
+      .names = "{.col}_harmonized"
+    ),
+    total_score_harmonized = A_harmonized + P_harmonized +
+      E_harmonized + F_harmonized,
+    n_elevated_harmonized = (A_harmonized > 0) + (P_harmonized > 0) +
+      (E_harmonized > 0) + (F_harmonized > 0)
   )
 
 dat |>
@@ -199,6 +212,97 @@ dat |>
   kable(col.names = c("Stock", "Year", "A", "P", "E", "F",
                        "Total", "# Elevated", "% Reduction"))
 ```
+
+For model sensitivity, scores from 2023 onward are also harmonized to the
+earlier four-level scale. Under that harmonization, the current level 2
+("increased") is treated as approximately equivalent to the earlier level 3,
+and the current level 3 ("extreme") is treated as approximately equivalent to
+the earlier level 4. Scores of 0 remain non-elevated placeholders in the
+analysis dataset.
+
+## Modeling historical patterns of ABC reductions below the maximum permissible
+
+Before the risk table was formalized, Thompson prepared a working paper for
+the SSC that asked a related question: could historical BSAI and GOA
+Groundfish Plan Team recommendations to set ABC below the maximum permissible
+level be reverse-engineered into transparent decision rules?
+[@Thompson2019ABCReductions]. The analysis covered 2003-2017 and identified
+76 instances in which the Plan Teams recommended ABC below `maxABC`, or about
+five instances per year.
+
+The raw historical record was qualitative. For each reduction, the Plan Teams
+usually provided one or more reasons, and Thompson condensed 122 unique stated
+reasons into 66 initial binary variables. Because many reasons occurred
+together and made the design matrix singular, the variables were progressively
+combined into 52 and then 32 final "Round 3" variables. The response was the
+proportional reduction from `maxABC`, transformed with a symmetric logit-style
+mapping,
+
+$$
+\log\left(\frac{1 + y_i}{1 - y_i}\right),
+$$
+
+where $y_i$ is the proportional ABC reduction for instance $i$.
+
+The first model used ordinary least squares on the transformed response, but
+some coefficients were negative. Thompson then fit a constrained version with
+nonnegative coefficients so that any applicable reason would imply either no
+reduction or a downward adjustment from `maxABC`, never an upward adjustment.
+Both models fit the historical reductions similarly well after transformation
+back to the natural scale, with $R^2$ values of about 0.83 for the
+unconstrained model and 0.82 for the constrained model
+[@Thompson2019ABCReductions].
+
+The constrained model is useful here because it shows an earlier attempt to
+translate qualitative concerns into a quantitative ABC buffer. Several
+variables implied little or no univariate reduction once paired historical
+patterns were accounted for, while others implied substantial reductions when
+considered alone. Examples from the constrained model are shown in
+@tbl-thompson-2019-selected.
+
+```{r}
+#| label: tbl-thompson-2019-selected
+#| tbl-cap: "Selected constrained-model coefficients and implied univariate ABC reductions from Thompson's historical ABC reduction working paper."
+
+tribble(
+  ~reason, ~beta, ~univariate_reduction,
+  "Projected biomass decline", 0.21, 0.10,
+  "Long-term poor recruitment", 0.22, 0.11,
+  "Dorn's buffer", 0.23, 0.11,
+  "Uncertain recruitment estimates, including recent large estimates", 0.40, 0.20,
+  "Model uncertainty", 0.43, 0.21,
+  "Uncertainty surrounding M and Q", 0.60, 0.29,
+  "Low or long-term declining biomass", 0.82, 0.39,
+  "Large survey CV", 0.91, 0.43,
+  "No new survey", 1.81, 0.72
+) |>
+  mutate(
+    beta = round(beta, 2),
+    `Univariate reduction (%)` = round(100 * univariate_reduction)
+  ) |>
+  select(
+    Reason = reason,
+    `Constrained beta` = beta,
+    `Univariate reduction (%)`
+  ) |>
+  kable()
+```
+
+That working paper also flagged important limitations that carry over to any
+analysis of risk-table reductions. The historical reasons were not collected
+from a prospective checklist; they were usually articulated after an author or
+Plan Team had already become concerned that a reduction might be warranted.
+The variable consolidation was therefore partly subjective, and a zero
+coefficient did not necessarily mean a concern was unimportant. It meant only
+that the concern did not add explanatory power beyond the other concerns with
+which it had historically appeared [@Thompson2019ABCReductions].
+
+The current analysis differs in two ways. First, it uses the formal risk table
+scores rather than the older ad hoc reason codes. Second, it focuses on final
+SSC reductions rather than Plan Team recommendations. The connection is that
+both exercises treat ABC reductions as historically observable decisions that
+can be modeled descriptively, while recognizing that the fitted relationships
+are not automatic decision rules.
 
 ## Thompson's link between risk and ABC reductions
 
@@ -233,39 +337,52 @@ The final buffer follows from the ratio $OFL / maxABC_{PE}$. If
 $maxABC_{PE}$ is greater than OFL, ABC is reduced by that ratio; otherwise ABC
 remains at `maxABC`.
 
+Because the risk table changed through time, the applied calculation below
+uses three risk levels throughout, matching the current normal, increased, and
+extreme scoring. The number of categories remains year-specific: the 2018
+trial-year calculations use three categories because the fishery-informed
+category had not yet been added, while later calculations use four categories.
+
 @fig-thompson-heatmap gives a first illustration of the mechanism by reducing
 the four-category risk table to two simple dimensions: the number of elevated
-categories and the common level assigned to those elevated categories. The
+categories and the common three-level risk score assigned to those elevated
+categories. The
 panels show how the retained fraction of maximum permissible ABC changes as
 the within-level fraction, $\Delta$, moves from the lower to upper part of each
-risk interval.
+risk interval. This illustration uses the four-category, three-level structure
+used from 2023 onward; the applied table below uses the same three-level
+structure but switches the number of categories by year.
 
 ```{r}
 #| label: fig-thompson-heatmap
-#| fig-cap: "Illustrative ABC retained under Thompson's probability link, summarized by the number of elevated categories and the common risk level assigned to those categories. OFL is normalized to 1 and CV is set to 0.30."
+#| fig-cap: "Illustrative ABC retained under Thompson's probability link, summarized by the number of elevated categories and the common three-level risk score assigned to those categories. OFL is normalized to 1 and CV is set to 0.30."
 #| fig-width: 8
 #| fig-height: 5.5
 
 thompson_p0 <- 0.49
-thompson_nlev <- 4
+thompson_nlev <- 3
 thompson_ncat <- 4
 thompson_cv <- 0.30
 thompson_sigma <- sqrt(log1p(thompson_cv^2))
 
-thompson_bounds <- tibble(level = 1:thompson_nlev) |>
-  mutate(
-    p_upper = (level + thompson_nlev - 2) / (2 * (thompson_nlev - 1)),
-    p_lower = if_else(level == 1, thompson_p0, lag(p_upper))
-  )
+thompson_bounds_for_nlev <- function(nlev) {
+  tibble(level = 1:nlev) |>
+    mutate(
+      p_upper = (level + nlev - 2) / (2 * (nlev - 1)),
+      p_lower = if_else(level == 1, thompson_p0, lag(p_upper))
+    )
+}
 
-level_to_p_cond <- function(level, delta = 0.5) {
-  bounds <- thompson_bounds |>
+thompson_bounds <- thompson_bounds_for_nlev(thompson_nlev)
+
+level_to_p_cond <- function(level, delta = 0.5, nlev = thompson_nlev) {
+  bounds <- thompson_bounds_for_nlev(nlev) |>
     filter(.data$level == .env$level)
   bounds$p_lower + delta * (bounds$p_upper - bounds$p_lower)
 }
 
-p_cond_to_marginal <- function(p_cond) {
-  1 - ((1 - p_cond) / (1 - thompson_p0))^(1 / thompson_ncat)
+p_cond_to_marginal <- function(p_cond, ncat = thompson_ncat) {
+  1 - ((1 - p_cond) / (1 - thompson_p0))^(1 / ncat)
 }
 
 joint_p <- function(pj) {
@@ -310,7 +427,7 @@ ggplot(thompson_heatmap,
   scale_y_continuous(breaks = 1:thompson_nlev) +
   labs(
     x = "Number of elevated-risk categories",
-    y = "Risk level of elevated categories"
+    y = "Three-level risk score of elevated categories"
   ) +
   theme_minimal(base_size = 12)
 ```
@@ -350,57 +467,154 @@ thompson_bounds_midpoint |>
 ```
 
 To apply the same logic to the historical score combinations in this report,
-@tbl-thompson-applied uses each row's four category scores, treats scores of 0
-as normal level 1, and uses the midpoint of each risk level. This is not a
-reconstruction of the SSC's calculation, because the actual within-level
-$\Delta$ values and stock-specific OFL uncertainty distributions are not in the
-summary table. It is a transparent benchmark showing the probability-equivalent
-`maxABC` implied by Thompson's mapping for the observed score combinations.
+@tbl-thompson-applied uses the year-appropriate number of categories, uses
+three risk levels for all years, treats scores of 0 as normal level 1, and
+sets the within-level fraction to $\Delta = 0.9$. This is not a reconstruction
+of the SSC's
+calculation, because the actual within-level $\Delta$ values and
+stock-specific OFL uncertainty distributions are not in the summary table. It
+is a transparent benchmark showing the probability-equivalent `maxABC` implied
+by Thompson's mapping for the observed score combinations.
 
 ```{r}
 #| label: tbl-thompson-applied
-#| tbl-cap: "Illustrative application of Thompson's probability mapping to observed score combinations. OFL is normalized to 1 and CV is set to 0.30."
+#| tbl-cap: "Illustrative application of Thompson's probability mapping to observed score combinations using three risk levels and within-level delta = 0.9. OFL is normalized to 1 and CV is set to 0.30."
 
-score_to_level <- function(score) {
-  pmin(pmax(if_else(score == 0, 1, score), 1), thompson_nlev)
+thompson_applied_delta <- 0.9
+
+year_settings <- function(year) {
+  tibble(
+    ncat = if_else(year == 2018, 3L, 4L),
+    nlev = 3L,
+    scoring_era = case_when(
+      year == 2018 ~ "2018: 3 categories, 3 levels",
+      TRUE ~ "2019+: 4 categories, 3 levels"
+    )
+  )
 }
 
-thompson_applied <- dat |>
-  mutate(
-    across(c(A, P, E, F), score_to_level, .names = "{.col}_level"),
-    across(ends_with("_level"),
-           ~ map_dbl(.x, level_to_p_cond),
-           .names = "{.col}_p_cond"),
-    across(ends_with("_p_cond"),
-           p_cond_to_marginal,
-           .names = "{.col}_marginal"),
-    thompson_joint_p = 1 - (1 - thompson_p0) *
-      (1 - A_level_p_cond_marginal) *
-      (1 - P_level_p_cond_marginal) *
-      (1 - E_level_p_cond_marginal) *
-      (1 - F_level_p_cond_marginal),
-    maxABC_pe_to_OFL = qlnorm(
-      thompson_joint_p,
-      meanlog = 0,
-      sdlog = thompson_sigma
-    ),
+score_to_level <- function(score, nlev) {
+  pmin(pmax(if_else(score == 0, 1, score), 1), nlev)
+}
+
+row_thompson <- function(A, P, E, F, year, delta = 0.5) {
+  settings <- year_settings(year)
+  scores <- if (settings$ncat == 3L) {
+    c(A, P, E)
+  } else {
+    c(A, P, E, F)
+  }
+  levels <- score_to_level(scores, settings$nlev)
+  p_cond <- map_dbl(levels, level_to_p_cond,
+                    delta = delta, nlev = settings$nlev)
+  pj <- map_dbl(p_cond, p_cond_to_marginal, ncat = settings$ncat)
+  p <- joint_p(pj)
+  maxABC_pe_to_OFL <- qlnorm(
+    p,
+    meanlog = 0,
+    sdlog = thompson_sigma
+  )
+  tibble(
+    ncat = settings$ncat,
+    nlev = settings$nlev,
+    scoring_era = settings$scoring_era,
+    thompson_joint_p = p,
+    maxABC_pe_to_OFL = maxABC_pe_to_OFL,
     thompson_abc_to_maxABC = pmin(1, 1 / maxABC_pe_to_OFL),
     thompson_pct_reduction = 100 * (1 - thompson_abc_to_maxABC)
   )
+}
+
+thompson_applied <- dat |>
+  mutate(thompson = pmap(
+    list(A, P, E, F, year),
+    row_thompson,
+    delta = thompson_applied_delta
+  )) |>
+  unnest(thompson)
 
 thompson_applied |>
   transmute(
     Stock = stock,
     Year = year,
     A, P, E, F,
+    `Scoring era` = scoring_era,
+    ncat,
+    nlev,
     `Observed SSC reduction (%)` = pct_red,
     `Joint P` = round(thompson_joint_p, 3),
     `maxABC_PE / OFL` = round(maxABC_pe_to_OFL, 3),
-    `Thompson midpoint reduction (%)` = round(thompson_pct_reduction, 1)
+    `Thompson reduction (%)` = round(thompson_pct_reduction, 1)
   ) |>
   arrange(desc(`maxABC_PE / OFL`), Stock, Year) |>
   kable()
 ```
+
+@fig-thompson-observed compares the observed SSC reductions with
+three-level Thompson reductions across three high within-level values of
+$\Delta$: 0.90, 0.95, and 0.99. Points
+above the 1:1 line indicate cases where the illustrative Thompson calculation
+would imply a larger reduction than the observed SSC reduction; points below
+the line indicate cases where it would imply a smaller reduction.
+
+```{r}
+#| label: fig-thompson-observed
+#| fig-cap: "Observed SSC reduction compared with the illustrative three-level Thompson reduction. Colors show years and shapes show within-level delta."
+#| fig-width: 8
+#| fig-height: 6
+
+thompson_delta_grid <- dat |>
+  crossing(delta = c(0.90, 0.95, 0.99)) |>
+  mutate(thompson = pmap(
+    list(A, P, E, F, year, delta),
+    row_thompson
+  )) |>
+  unnest(thompson) |>
+  mutate(delta = factor(delta))
+
+ggplot(
+  thompson_delta_grid,
+  aes(
+    x = pct_red,
+    y = thompson_pct_reduction,
+    color = factor(year),
+    shape = delta
+  )
+) +
+  geom_abline(slope = 1, intercept = 0,
+              linetype = "dashed", color = "grey55") +
+  geom_point(size = 3, alpha = 0.9) +
+  scale_color_viridis_d(name = "Year") +
+  labs(
+    x = "Observed SSC reduction from maxABC (%)",
+    y = "Thompson reduction from maxABC (%)",
+    color = "Year",
+    shape = "Delta"
+  ) +
+  coord_equal(xlim = c(0, 100), ylim = c(0, 100)) +
+  theme(legend.position = "right",
+        legend.text = element_text(size = 8))
+```
+
+In plain language, Thompson's method turns the risk table into a probability
+meter and then into a catch dial. The starting point is the assessment model's
+baseline probability, $P_0$, that `maxABC` would exceed the true OFL. The risk
+table then adds the concerns that are not already captured by the model:
+assessment issues, population dynamics, ecosystem signals, and fishery
+information. Each category is assigned a risk level, optionally fine-tuned
+within that level with $\Delta$, and those category risks are combined into one
+overall probability, $P$.
+
+The decision rule is simple. If $P \leq 0.5$, the probability of overfishing is
+treated as acceptable and ABC remains at `maxABC`. If $P > 0.5$, the
+probability is too high and ABC is scaled down. Higher values of $P$ imply a
+larger gap between `maxABC` and the probability-equivalent `maxABC`, so the
+resulting ABC reduction gets larger.
+
+The intuition is: few low-risk scores are a green light for full catch; some
+moderate risks are a yellow light for a smaller cut; many high risks are a red
+light for a larger cut. In one line, more risk means a higher chance of
+overfishing, which means a lower allowed catch.
 
 ## Exploratory Figures
 
@@ -581,6 +795,66 @@ breadth (how many categories are flagged).
 m4 <- betareg(pct_red_prop ~ total_score + n_elevated, data = dat)
 summary(m4)
 ```
+
+### Sensitivity: harmonized score scale
+
+The main regression models above use the scores as recorded in the historical
+risk table summary. Because the scoring scale changed in 2023, the sensitivity
+models below harmonize 2023+ scores to the earlier four-level scale before
+fitting the same broad model forms. Specifically, current level 2 is treated
+as old level 3 and current level 3 is treated as old level 4. This adjustment
+does not change whether a category is elevated, but it does change the
+severity assigned to recent elevated scores.
+
+```{r}
+#| label: tbl-harmonized-sensitivity
+#| tbl-cap: "Sensitivity comparison using raw scores and harmonized 2023+ scores."
+
+m2_harmonized <- lm(
+  pct_red ~ A_harmonized + P_harmonized + E_harmonized + F_harmonized,
+  data = dat
+)
+
+m3_harmonized <- betareg(
+  pct_red_prop ~ A_harmonized + P_harmonized +
+    E_harmonized + F_harmonized,
+  data = dat
+)
+
+m4_harmonized <- betareg(
+  pct_red_prop ~ total_score_harmonized + n_elevated_harmonized,
+  data = dat
+)
+
+harmonized_compare <- tribble(
+  ~model, ~score_scale, ~description, ~AIC, ~R2,
+  "M2", "Raw", "OLS ~ A + P + E + F",
+    AIC(m2), summary(m2)$adj.r.squared,
+  "M2h", "Harmonized", "OLS ~ A + P + E + F",
+    AIC(m2_harmonized), summary(m2_harmonized)$adj.r.squared,
+  "M3", "Raw", "Beta ~ A + P + E + F",
+    AIC(m3), m3$pseudo.r.squared,
+  "M3h", "Harmonized", "Beta ~ A + P + E + F",
+    AIC(m3_harmonized), m3_harmonized$pseudo.r.squared,
+  "M4", "Raw", "Beta ~ total + n_elevated",
+    AIC(m4), m4$pseudo.r.squared,
+  "M4h", "Harmonized", "Beta ~ total + n_elevated",
+    AIC(m4_harmonized), m4_harmonized$pseudo.r.squared
+)
+
+harmonized_compare |>
+  mutate(across(c(AIC, R2), ~ round(.x, 2))) |>
+  kable(
+    col.names = c(
+      "Model", "Score scale", "Description", "AIC", "R² / pseudo-R²"
+    )
+  )
+```
+
+The harmonized fits should be read as a sensitivity analysis rather than a
+replacement for the raw-score models. They ask whether the main conclusions
+are sensitive to treating the 2023+ three-level scores as compressed versions
+of the earlier four-level scores.
 
 ### Model 5: Bayesian beta mixed-effects model
 
